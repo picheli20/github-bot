@@ -1,0 +1,35 @@
+{
+  "name": "github-bot",
+  "scripts": {
+  },
+  "env": {
+    "GH_PASSWORD": {
+      "required": true
+    },
+    "GH_REPO": {
+      "required": true
+    },
+    "GH_REPO_OWNER": {
+      "required": true
+    },
+    "GH_USER": {
+      "required": true
+    },
+    "GITHUB_REVIWERS_CRES": {
+      "required": true
+    },
+    "GITHUB_REVIWERS_ELNEW": {
+      "required": true
+    }
+  },
+  "formation": {
+  },
+  "addons": [
+
+  ],
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ]
+}
