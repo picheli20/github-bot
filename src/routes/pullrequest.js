@@ -41,6 +41,14 @@ router.get('/all', function (req, res) {
 /**
 * GET /pullrequest: Process all pull requests
 */
+router.get('/env', function (req, res) {
+  console.log(process.env);
+  res.json({ env: process.env });
+});
+
+/**
+* GET /pullrequest: Process all pull requests
+*/
 router.get('/:id', function (req, res) {
   Bot.getPullRequest(req.params.id, pr => {
     res.json({ status: 'Doing initial setup on ' + pr.title });
