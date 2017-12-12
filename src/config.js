@@ -2,6 +2,7 @@ const pe = process.env;
 
 const config = {
   projects: ['CRES', 'ELNEW'],
+  herokuApp: pe.pe.HEROKU_APP || '',
   github: {
     user: pe.GH_USER || '',
     password: pe.GH_PASSWORD || '',

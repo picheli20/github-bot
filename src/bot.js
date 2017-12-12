@@ -35,11 +35,15 @@ class Bot {
     this.setReviwers(pr);
     this.selfAssignee(pr);
     this.updateLabels(pr);
-    this.doForEachClone(project => this.clonePr(pr, project));
+
+    commentLinks = `Links: \n ELNEW: ${getLink(config.herokuApp, pr.number)}`;
+    this.doForEachClone(project => this.clonePr(pr, project, link => commentLinks = `${commentLinks} \n ${link}`));
 
     if (config.github.instructionsComment !== '') {
-      this.postComment(pr.number, config.github.instructionsComment);
+      commentLinks = `${config.github.instructionsComment}\n ${commentLinks}`
     }
+
+    this.postComment(pr.number, commentLinks);
   }
 
   checkReviews(pr, callback) {
@@ -137,9 +141,11 @@ class Bot {
       base: 'master',
       owner: config.github.clone[project].owner,
       repo: config.github.clone[project].repo,
-    }, this.genericAction('create: Error while creating pull request', clonePR => {
-      this.postComment(pr.number, `${project}: https://${config.github.clone[project].herokuApp}-pr-${clonePR.number}.herokuapp.com/`, callback);
-    }));
+    },
+    this.genericAction(
+      'create: Error while creating pull request',
+      clonePR => callback(this.getLink(config.github.clone[project].herokuApp, clonePR.number))
+    ));
   }
 
   closeClone (pr, project, callback) {
@@ -234,6 +240,10 @@ class Bot {
         callback(result.data);
       }
     }
+  }
+
+  getLink(number, app) {
+    return `https://${number}-pr-${app}.herokuapp.com/`;
   }
 }
 
