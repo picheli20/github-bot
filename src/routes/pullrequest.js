@@ -3,20 +3,23 @@ const router = express.Router();
 const Bot = require('../bot');
 const config = require('../config');
 
-let received = {};
+let log = [];
 
 /**
 * POST /pullrequest: Process incoming GitHub payload
 */
 router.post('/', function (req, res) {
-  received = req.body;
-  res.json(received);
+  res.json({ status: 'Checking ' });
 
   if (!req.body) {
     return console.error('POST Request received, but no body!');
   }
 
   const pr = req.body.pull_request;
+  log.unshift({ action: req.body.action, pr});
+  if(log.length > 50) {
+    log.pop();
+  }
 
   switch (req.body.action) {
     case 'opened':
@@ -39,6 +42,10 @@ router.get('/all', function (req, res) {
     res.json({ status: 'Doing initialSetup on ' + res.length + ' PRS' });
     res.forEach(pr => Bot.initialSetup(pr));
   });
+});
+
+router.get('/log', function (req, res) {
+  res.json(log);
 });
 
 /**
