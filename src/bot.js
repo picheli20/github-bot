@@ -52,7 +52,10 @@ class Bot {
           if (!parsedCommit.valid) {
             return;
           }
-          issues.push(parsedCommit.issue);
+
+          if (issues.indexOf(parsedCommit.issue) === -1) {
+            issues.push(parsedCommit.issue);
+          }
         });
 
         if (config.jira.url && issues.length > 0) {
