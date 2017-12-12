@@ -1,7 +1,7 @@
 const pe = process.env;
 
 const config = {
-  projects: ['CRES', 'ELNEW'],
+  projects: ['CRES', 'ELNEW', 'XCAF'],
   herokuApp: pe.HEROKU_APP || '',
   jira: {
     url: pe.JIRA_URL || 'https://jira.cherrytech.com/',
@@ -30,6 +30,7 @@ const config = {
       teams: {
         CRES: pe.GITHUB_REVIWERS_CRES || '',
         ELNEW: pe.GITHUB_REVIWERS_ELNEW || '',
+        XCAF: pe.GITHUB_REVIWERS_XCAF || '',
       }
     },
     firstCommitRegex: /(?:[A-Z0-9]+-\d+ (?:feat|fix|perf|revert|docs|style|refactor|test|chore)\([^ )]*\): .+|Release \d+\.\d+\.\d+)/,
