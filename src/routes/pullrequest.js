@@ -25,6 +25,9 @@ router.post('/', function (req, res) {
     case 'submitted':
       Bot.checkReviews(pr);
       break;
+    case 'closed':
+      Bot.doForEachClone(project => Bot.closeClone(pr, project));
+      break;
   }
 });
 

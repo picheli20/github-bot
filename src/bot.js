@@ -35,6 +35,8 @@ class Bot {
     this.setReviwers(pr);
     this.selfAssignee(pr);
     this.updateLabels(pr);
+    this.doForEachClone(project => this.clonePr(pr, project));
+
     if (config.github.instructionsComment !== '') {
       this.postComment(pr.number, config.github.instructionsComment);
     }
@@ -103,7 +105,7 @@ class Bot {
   }
 
   setReviwers(pr, callback) {
-    const team = config.github.reviwers.prefix.filter(item => pr.title.indexOf(item) > -1)[0] || config.github.reviwers.prefix[0];
+    const team = config.projects.filter(item => pr.title.indexOf(item) > -1)[0] || config.projects[0];
     const reviewers = config.github.reviwers.teams[team].split(' ');
 
     const myIndex = reviewers.indexOf(pr.user.login);
@@ -117,6 +119,51 @@ class Bot {
       repo: config.github.repo,
       reviewers,
     }, this.genericAction('createReviewRequest: Error while fetching creating reviewers', callback));
+  }
+  // Clone
+  doForEachClone(callback) {
+    config.projects.forEach(project => {
+      if (!config.github.clone[project]) {
+        return;
+      }
+      callback(project);
+    });
+  }
+  clonePr (pr, project, callback) {
+    this.github.pullRequests.create({
+      title: `[clone-${pr.number}] ${pr.title}`,
+      body: `Original PR: ${pr._links.self.href}`,
+      head: pr.head.label,
+      base: 'master',
+      owner: config.github.clone[project].owner,
+      repo: config.github.clone[project].repo,
+    }, this.genericAction('create: Error while creating pull request', clonePR => {
+      this.postComment(pr.number, `${project}: https://${config.github.clone[project].herokuApp}-pr-${clonePR.number}.herokuapp.com/`, callback);
+    }));
+  }
+
+  closeClone (pr, project, callback) {
+    this.github.pullRequests.getAll({
+      owner: config.github.clone[project].owner,
+      repo: config.github.clone[project].repo,
+    },
+    this.genericAction(
+      'getPullRequests: Error while fetching PRs ',
+      clones => {
+        let clone = clones.filter(clone => clone.title.indexOf(`[clone-${pr.number}]`) > -1);
+        if(clone.length === 0) {
+          this.postComment(pr.number, `Clone for ${project} not found`, callback);
+          return;
+        }
+
+        this.github.issues.edit({
+          owner: config.github.clone[project].owner,
+          repo: config.github.clone[project].repo,
+          number: clone.number,
+          state: 'closed',
+        }, this.genericAction('issues.edit: Error while closing a cloned pull request', callback));
+      }
+    ));
   }
 
   addLabels (pr, labels, callback) {

@@ -1,12 +1,20 @@
 const pe = process.env;
 
 const config = {
+  projects: ['CRES', 'ELNEW'],
   github: {
     user: pe.GH_USER || '',
     password: pe.GH_PASSWORD || '',
     oauth2token:  pe.OAUTH2TOKEN || '',
     repo: pe.GH_REPO || '',
     repoOwner: pe.GH_REPO_OWNER || '',
+    clone: {
+      CRESUS: {
+        repo: pe.GH_REPO_CLONE_CRESUS || '',
+        owner: pe.pe.GH_REPO_CLONE_CRESUS_OWNER || '',
+        herokuApp: pe.pe.GH_REPO_CLONE_CRESUS_HEROKU_APP || '',
+      },
+    },
     label: {
       ready: 'ready for test',
       dontReview: 'don\'t review',
@@ -15,7 +23,6 @@ const config = {
     reviewsNeeded: 2,
     instructionsComment: pe.GITHUB_INTRO_COMMENT || '',
     reviwers: {
-      prefix: ['CRES', 'ELNEW'],
       teams: {
         CRES: pe.GITHUB_REVIWERS_CRES || '',
         ELNEW: pe.GITHUB_REVIWERS_ELNEW || '',
