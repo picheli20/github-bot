@@ -36,14 +36,17 @@ class Bot {
     this.selfAssignee(pr);
     this.updateLabels(pr);
 
-    let commentLinks = `Links: \n ELNEW: ${this.getLink(config.herokuApp, pr.number)}`;
-    this.doForEachClone(project => this.clonePr(pr, project, link => commentLinks = `${commentLinks} \n ${link}`));
-    console.log(commentLinks);
-    if (config.github.instructionsComment !== '') {
-      commentLinks = `${config.github.instructionsComment}\n ${commentLinks}`
-    }
+    let commentLinks = `Links: \nELNEW: ${this.getLink(config.herokuApp, pr.number)}`;
+    this.doForEachClone(project => this.clonePr(pr, project, link => commentLinks = `${commentLinks} \n${project}: ${link}`));
 
-    this.postComment(pr.number, commentLinks);
+    // Delay to wait will all the links be ready
+    setTimeout(() => {
+      if (config.github.instructionsComment !== '') {
+        commentLinks = `${config.github.instructionsComment}\n ${commentLinks}`
+      }
+
+      this.postComment(pr.number, commentLinks);
+    }, 5000);
   }
 
   checkReviews(pr, callback) {
@@ -141,11 +144,13 @@ class Bot {
       base: 'master',
       owner: config.github.clone[project].owner,
       repo: config.github.clone[project].repo,
-    },
-    this.genericAction(
-      'create: Error while creating pull request',
-      clonePR => callback(this.getLink(config.github.clone[project].herokuApp, clonePR.number))
-    ));
+    }, (error, result) => {
+      if(error) {
+        return console.log('Clone PR error', error);
+      }
+
+      callback(this.getLink(config.github.clone[project].herokuApp, result.data.number));
+    });
   }
 
   closeClone (pr, project, callback) {
@@ -243,6 +248,7 @@ class Bot {
   }
 
   getLink(number, app) {
+    console.log('number', number, 'app', app);
     return `https://${number}-pr-${app}.herokuapp.com/`;
   }
 }
