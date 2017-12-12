@@ -45,7 +45,23 @@ class Bot {
         commentLinks = `${config.github.instructionsComment}\n ${commentLinks}`
       }
 
-      this.postComment(pr.number, commentLinks);
+      this.getCommits(pr, resp => {
+        const issues = [];
+        resp.forEach(item => {
+          const parsedCommit = this.parseCommit(item.commit.message);
+          if (!parsedCommit.valid) {
+            return;
+          }
+          issues.push(parsedCommit.issue);
+        });
+
+        if (config.jira.url && issues.length > 0) {
+          commentLinks = `\nJira issue(s):`
+          issues.forEach(issue => commentLinks = `${config.jira.url}browse/${issue}`)
+        }
+
+        this.postComment(pr.number, commentLinks);
+      });
     }, 5000);
   }
 

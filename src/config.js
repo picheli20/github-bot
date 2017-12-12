@@ -3,6 +3,9 @@ const pe = process.env;
 const config = {
   projects: ['CRES', 'ELNEW'],
   herokuApp: pe.HEROKU_APP || '',
+  jira: {
+    url: pe.JIRA_URL || 'https://jira.cherrytech.com/',
+  },
   github: {
     user: pe.GH_USER || '',
     password: pe.GH_PASSWORD || '',
