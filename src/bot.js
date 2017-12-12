@@ -36,13 +36,23 @@ class Bot {
     this.selfAssignee(pr);
     this.updateLabels(pr);
 
+    clones = [];
+
     let commentLinks = `Deployment links: \nELNEW: ${this.getLink(config.herokuApp, pr.number)}`;
-    this.doForEachClone(project => this.clonePr(pr, project, link => commentLinks = `${commentLinks} \n${project}: ${link}`));
+    this.doForEachClone(project => this.clonePr(pr, project, data => {
+      commentLinks = `${commentLinks} \n${project}: ${data.deploy}`;
+      clones.push(data.clone);
+    }));
 
     // Delay to wait will all the links be ready
     setTimeout(() => {
       if (config.github.instructionsComment !== '') {
         commentLinks = `${config.github.instructionsComment}\n ${commentLinks}`
+      }
+
+      if (clones.length > 0) {
+        commentLinks += '\n\nClonned PR(s):'
+        clones.forEach(clone => commentLinks += `\nhttps://github.com/${clone.owner}/${clone.repo}/${clone.number}`);
       }
 
       this.getCommits(pr, resp => {
@@ -59,7 +69,7 @@ class Bot {
         });
 
         if (config.jira.url && issues.length > 0) {
-          commentLinks += `\nJira issue(s):`
+          commentLinks += `\n\nJira issue(s):`
           issues.forEach(issue => commentLinks += `\n${config.jira.url}browse/${issue}`)
         }
 
@@ -157,7 +167,7 @@ class Bot {
   clonePr (pr, project, callback) {
     this.github.pullRequests.create({
       title: `[clone-${pr.number}] ${pr.title}`,
-      body: `Original PR: ${pr._links.self.href}`,
+      body: `Original PR: https://github.com/${config.github.repoOwner}/${config.github.repo}/${pr.number}`,
       head: pr.head.label,
       base: 'master',
       owner: config.github.clone[project].owner,
@@ -167,7 +177,13 @@ class Bot {
         return console.log('Clone PR error', error);
       }
 
-      callback(this.getLink(config.github.clone[project].herokuApp, result.data.number));
+      callback({
+        deploy: this.getLink(config.github.clone[project].herokuApp, result.data.number),
+        clone: {
+          ...config.github.clone[project],
+          number: result.data.number
+        },
+      });
     });
   }
 
