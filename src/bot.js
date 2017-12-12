@@ -76,8 +76,7 @@ class Bot {
       resp => {
         const rejected = resp.filter(item => item.state === 'CHANGES_REQUESTED');
         const approved = resp.filter(item => item.state === 'APPROVED');
-
-        if (rejected.length === 0 && approved >= config.github.reviewsNeeded) {
+        if (rejected.length === 0 && approved.length >= config.github.reviewsNeeded) {
           this.addLabels(pr, config.github.label.ready, callback);
         }
 
