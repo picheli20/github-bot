@@ -10,7 +10,7 @@ const config = {
     repo: pe.GH_REPO || '',
     repoOwner: pe.GH_REPO_OWNER || '',
     clone: {
-      CRESUS: {
+      CRES: {
         repo: pe.GH_REPO_CLONE_CRESUS || '',
         owner: pe.GH_REPO_CLONE_CRESUS_OWNER || '',
         herokuApp: pe.GH_REPO_CLONE_CRESUS_HEROKU_APP || '',

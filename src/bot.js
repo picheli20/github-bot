@@ -36,9 +36,9 @@ class Bot {
     this.selfAssignee(pr);
     this.updateLabels(pr);
 
-    commentLinks = `Links: \n ELNEW: ${getLink(config.herokuApp, pr.number)}`;
+    let commentLinks = `Links: \n ELNEW: ${this.getLink(config.herokuApp, pr.number)}`;
     this.doForEachClone(project => this.clonePr(pr, project, link => commentLinks = `${commentLinks} \n ${link}`));
-
+    console.log(commentLinks);
     if (config.github.instructionsComment !== '') {
       commentLinks = `${config.github.instructionsComment}\n ${commentLinks}`
     }
