@@ -38,7 +38,7 @@ class Bot {
 
     let clones = [];
 
-    let commentLinks = `Deployment links: \nELNEW: ${this.getLink(config.herokuApp, pr.number)}`;
+    let commentLinks = `Deployment link(s): \nELNEW: ${this.getLink(config.herokuApp, pr.number)}`;
     this.doForEachClone(project => this.clonePr(pr, project, data => {
       commentLinks = `${commentLinks} \n${project}: ${data.deploy}`;
       clones.push(data.clone);
@@ -51,7 +51,7 @@ class Bot {
       }
 
       if (clones.length > 0) {
-        commentLinks += '\n\nClonned PR(s):'
+        commentLinks += '\n\nCloned PR(s):'
         clones.forEach(clone => commentLinks += `\nhttps://github.com/${clone.owner}/${clone.repo}/pull/${clone.number}`);
       }
 
