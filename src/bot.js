@@ -36,7 +36,7 @@ class Bot {
     this.selfAssignee(pr);
     this.updateLabels(pr);
 
-    clones = [];
+    let clones = [];
 
     let commentLinks = `Deployment links: \nELNEW: ${this.getLink(config.herokuApp, pr.number)}`;
     this.doForEachClone(project => this.clonePr(pr, project, data => {
@@ -52,7 +52,7 @@ class Bot {
 
       if (clones.length > 0) {
         commentLinks += '\n\nClonned PR(s):'
-        clones.forEach(clone => commentLinks += `\nhttps://github.com/${clone.owner}/${clone.repo}/${clone.number}`);
+        clones.forEach(clone => commentLinks += `\nhttps://github.com/${clone.owner}/${clone.repo}/pull/${clone.number}`);
       }
 
       this.getCommits(pr, resp => {
@@ -167,7 +167,7 @@ class Bot {
   clonePr (pr, project, callback) {
     this.github.pullRequests.create({
       title: `[clone-${pr.number}] ${pr.title}`,
-      body: `Original PR: https://github.com/${config.github.repoOwner}/${config.github.repo}/${pr.number}`,
+      body: `Original PR: https://github.com/${config.github.repoOwner}/${config.github.repo}/pull/${pr.number}`,
       head: pr.head.label,
       base: 'master',
       owner: config.github.clone[project].owner,
@@ -282,7 +282,6 @@ class Bot {
   }
 
   getLink(number, app) {
-    console.log('number', number, 'app', app);
     return `https://${number}-pr-${app}.herokuapp.com/`;
   }
 }
