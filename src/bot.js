@@ -56,8 +56,8 @@ class Bot {
         });
 
         if (config.jira.url && issues.length > 0) {
-          commentLinks = `\nJira issue(s):`
-          issues.forEach(issue => commentLinks = `${config.jira.url}browse/${issue}`)
+          commentLinks += `\nJira issue(s):`
+          issues.forEach(issue => commentLinks += `\n${config.jira.url}browse/${issue}`)
         }
 
         this.postComment(pr.number, commentLinks);
