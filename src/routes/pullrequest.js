@@ -44,6 +44,17 @@ router.get('/all', function (req, res) {
 /**
 * GET /pullrequest: Process all pull requests
 */
+router.get('/close/:id', function (req, res) {
+  Bot.getPullRequest(req.params.id, pr => {
+    res.json({ status: 'Doing initial setup on ' + pr.title });
+    Bot.closeClone(pr, 'CRES');
+  });
+});
+
+
+/**
+* GET /pullrequest: Process all pull requests
+*/
 router.get('/:id', function (req, res) {
   Bot.getPullRequest(req.params.id, pr => {
     res.json({ status: 'Doing initial setup on ' + pr.title });

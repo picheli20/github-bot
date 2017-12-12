@@ -36,7 +36,7 @@ class Bot {
     this.selfAssignee(pr);
     this.updateLabels(pr);
 
-    let commentLinks = `Links: \nELNEW: ${this.getLink(config.herokuApp, pr.number)}`;
+    let commentLinks = `Deployment links: \nELNEW: ${this.getLink(config.herokuApp, pr.number)}`;
     this.doForEachClone(project => this.clonePr(pr, project, link => commentLinks = `${commentLinks} \n${project}: ${link}`));
 
     // Delay to wait will all the links be ready
@@ -170,7 +170,7 @@ class Bot {
         this.github.issues.edit({
           owner: config.github.clone[project].owner,
           repo: config.github.clone[project].repo,
-          number: clone.number,
+          number: clone[0].number,
           state: 'closed',
         }, this.genericAction('issues.edit: Error while closing a cloned pull request', callback));
       }
