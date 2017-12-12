@@ -2,7 +2,7 @@ const pe = process.env;
 
 const config = {
   projects: ['CRES', 'ELNEW'],
-  herokuApp: pe.pe.HEROKU_APP || '',
+  herokuApp: pe.HEROKU_APP || '',
   github: {
     user: pe.GH_USER || '',
     password: pe.GH_PASSWORD || '',
@@ -12,8 +12,8 @@ const config = {
     clone: {
       CRESUS: {
         repo: pe.GH_REPO_CLONE_CRESUS || '',
-        owner: pe.pe.GH_REPO_CLONE_CRESUS_OWNER || '',
-        herokuApp: pe.pe.GH_REPO_CLONE_CRESUS_HEROKU_APP || '',
+        owner: pe.GH_REPO_CLONE_CRESUS_OWNER || '',
+        herokuApp: pe.GH_REPO_CLONE_CRESUS_HEROKU_APP || '',
       },
     },
     label: {
