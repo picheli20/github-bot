@@ -38,13 +38,15 @@ class Bot {
 
     let clones = [];
 
-    let commentLinks = `Deployment link(s): \nELNEW: ${this.getLink(config.herokuApp, pr.number)}`;
+    let serverLinks = `Deployment link(s): \nELNEW: ${this.getLink(config.herokuApp, pr.number)}`;
     this.doForEachClone(project => this.clonePr(pr, project, data => {
-      commentLinks = `${commentLinks} \n${project}: ${data.deploy}`;
+      serverLinks = `${serverLinks} \n${project}: ${data.deploy}`;
       clones.push(data.clone);
     }));
 
-    // Delay to wait will all the links be ready
+    let commentLinks = serverLinks;
+
+    // Delay to wait for all the links be ready
     setTimeout(() => {
       if (config.github.instructionsComment !== '') {
         commentLinks = `${config.github.instructionsComment}\n ${commentLinks}`
@@ -74,8 +76,18 @@ class Bot {
         }
 
         this.postComment(pr.number, commentLinks);
+
+        this.websocket.emit('initialsetup',{
+          issues,
+          comment: `${serverLinks} \nGithub: https://github.com/${config.github.repoOwner}/${config.github.repo}/pull/${pr.number}`,
+        });
+
       });
     }, 5000);
+  }
+
+  setWebsocket(io) {
+    this.websocket = io;
   }
 
   checkReviews(pr, callback) {
@@ -87,13 +99,36 @@ class Bot {
     this.genericAction(
       'getReview: Error while trying to get the reviews: ',
       resp => {
-        const rejected = resp.filter(item => item.state === 'CHANGES_REQUESTED');
-        const approved = resp.filter(item => item.state === 'APPROVED');
-        if (rejected.length === 0 && approved.length >= config.github.reviewsNeeded) {
-          this.addLabels(pr, [config.github.label.ready], callback);
+        let approvalMap = {};
+        let rejected = 0;
+        let approved = 0;
+
+        resp.map(item => approvalMap[item.user.login] = item.state);
+
+        for (var key in approvalMap) {
+          switch(approvalMap[key]) {
+            case 'APPROVED':
+              approved++;
+              break;
+            case 'CHANGES_REQUESTED':
+              rejected++;
+              break;
+          }
         }
 
-        // TODO: Trigger Jira
+        if (rejected === 0 && approved >= config.github.reviewsNeeded) {
+          this.addLabels(pr, [config.github.label.ready], callback);
+          this.getCommits(pr, resp => {
+            const issues = [];
+            resp.forEach(item => {
+              const parsedCommit = this.parseCommit(item.commit.message);
+              if (parsedCommit.valid && issues.indexOf(parsedCommit.issue) === -1) {
+                issues.push(parsedCommit.issue);
+              }
+            });
+            this.websocket.emit('approved', { issues });
+          });
+        }
       }
     ));
   }

@@ -3,6 +3,8 @@ const bodyParser = require('body-parser');
 const http = require('http');
 
 const pullrequest = require('./src/routes/pullrequest');
+const Bot = require('./src/bot');
+
 const port = process.env.PORT || '3000';
 
 const app = express();
@@ -13,5 +15,9 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use('/pullrequest', pullrequest);
 
 const server = http.createServer(app);
+
+
+Bot.setWebsocket(require('socket.io')(server));
+
 server.listen(port);
 server.on('listening', () => console.log('Listening on ' + port));

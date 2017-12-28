@@ -5,9 +5,6 @@ const config = require('../config');
 
 let log = [];
 
-/**
-* POST /pullrequest: Process incoming GitHub payload
-*/
 router.post('/', function (req, res) {
   res.json({ status: 'Checking ' });
 
@@ -29,14 +26,11 @@ router.post('/', function (req, res) {
       Bot.checkReviews(pr);
       break;
     case 'closed':
-      Bot.doForEachClone(project => Bot.closeClone(pr, project));
+      Bot.close(pr);
       break;
   }
 });
 
-/**
-* GET /pullrequest: Process all pull requests
-*/
 router.get('/all', function (req, res) {
   Bot.getPullRequests(res => {
     res.json({ status: 'Doing initialSetup on ' + res.length + ' PRS' });
@@ -48,9 +42,6 @@ router.get('/log', function (req, res) {
   res.json(log);
 });
 
-/**
-* GET /pullrequest: Process all pull requests
-*/
 router.get('/close/:id', function (req, res) {
   Bot.getPullRequest(req.params.id, pr => {
     res.json({ status: 'Doing initial setup on ' + pr.title });
@@ -58,10 +49,6 @@ router.get('/close/:id', function (req, res) {
   });
 });
 
-
-/**
-* GET /pullrequest: Process all pull requests
-*/
 router.get('/:id', function (req, res) {
   Bot.getPullRequest(req.params.id, pr => {
     res.json({ status: 'Doing initial setup on ' + pr.title });
