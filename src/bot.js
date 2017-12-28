@@ -79,7 +79,7 @@ class Bot {
 
         this.websocket.emit('initialsetup',{
           issues,
-          comment: `${serverLinks} \nGithub: https://github.com/${config.github.repoOwner}/${config.github.repo}/pull/${pr.number}`,
+          comment: `Github: https://github.com/${config.github.repoOwner}/${config.github.repo}/pull/${pr.number}\n${serverLinks}`,
         });
 
       });
