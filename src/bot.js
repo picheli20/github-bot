@@ -118,19 +118,24 @@ class Bot {
 
         if (rejected === 0 && approved >= config.github.reviewsNeeded) {
           this.addLabels(pr, [config.github.label.ready], callback);
-          this.getCommits(pr, resp => {
-            const issues = [];
-            resp.forEach(item => {
-              const parsedCommit = this.parseCommit(item.commit.message);
-              if (parsedCommit.valid && issues.indexOf(parsedCommit.issue) === -1) {
-                issues.push(parsedCommit.issue);
-              }
-            });
-            this.websocket.emit('approved', { issues });
-          });
+          Bot.getIssues(pr, issues => this.websocket.emit('approved', { issues }));
         }
       }
     ));
+  }
+
+  getIssues(pr, callback) {
+    this.getCommits(pr, resp => {
+      const issues = [];
+      resp.forEach(item => {
+        const parsedCommit = this.parseCommit(item.commit.message);
+        if (parsedCommit.valid && issues.indexOf(parsedCommit.issue) === -1) {
+          issues.push(parsedCommit.issue);
+        }
+      });
+      callback(issues);
+    });
+
   }
 
   parseCommit(commitMessage) {
