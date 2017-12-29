@@ -44,7 +44,7 @@ class Bot {
       clones.push(data.clone);
     }));
 
-    let commentLinks = serverLinks;
+    let commentLinks = '';
 
     // Delay to wait for all the links be ready
     setTimeout(() => {
@@ -75,7 +75,7 @@ class Bot {
           issues.forEach(issue => commentLinks += `\n${config.jira.url}browse/${issue}`)
         }
 
-        this.postComment(pr.number, commentLinks);
+        this.postComment(pr.number, `${serverLinks}\n${commentLinks}`);
 
         this.websocket.emit('initialsetup',{
           issues,
