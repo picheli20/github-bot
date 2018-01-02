@@ -27,9 +27,7 @@ router.post('/', function (req, res) {
       break;
     case 'closed':
       Bot.doForEachClone(project => Bot.closeClone(pr, project));
-      if (pr.merged_at) {
-        Bot.getIssues(pr, issues => Bot.websocket.emit('merged', { issues }));
-      }
+      if (pr.merged_at) Bot.getIssues(pr, issues => Bot.websocket.emit('merged', { issues }));
       break;
   }
 });

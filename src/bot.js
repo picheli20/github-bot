@@ -118,7 +118,7 @@ class Bot {
 
         if (rejected === 0 && approved >= config.github.reviewsNeeded) {
           this.addLabels(pr, [config.github.label.ready], callback);
-        //   Bot.getIssues(pr, issues => this.websocket.emit('approved', { issues }));
+          Bot.getIssues(pr, issues => this.websocket.emit('approved', { issues }));
         }
       }
     ));
