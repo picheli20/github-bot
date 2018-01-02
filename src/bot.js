@@ -97,9 +97,12 @@ class Bot {
     this.websocket.on('connection', socket => {
       socket.on(
         'e2e:fail',
-        ({ pr }) => this.postComment(pr.number, `E2E tests failed, please [click here](http://xcaliber-bot.herokuapp.com/e2e/${pr.number}) to re-run.`),
+        ({ pr }) => {
+          this.postComment(pr.number, `E2E tests failed, [click here](http://xcaliber-bot.herokuapp.com/e2e/${pr.number}) to re-run.`);
+          this.addLabels(pr, ['e2e:fail']);
+        },
       );
-      socket.on('e2e:success', ({ pr }) => this.postComment(pr.number, `E2E test passed`));
+      socket.on('e2e:success', ({ pr }) => this.addLabels(pr, ['e2e:success']));
     });
   }
 
