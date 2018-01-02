@@ -37,10 +37,14 @@ class Bot {
     this.updateLabels(pr);
 
     let clones = [];
+    let deployedUrl = {};
 
     let serverLinks = `Deployment link(s): \nELNEW: ${this.getLink(config.herokuApp, pr.number)}`;
+    deployedUrl['ELNEW'] = this.getLink(config.herokuApp, pr.number);
+
     this.doForEachClone(project => this.clonePr(pr, project, data => {
       serverLinks = `${serverLinks} \n${project}: ${data.deploy}`;
+      deployedUrl[project] = data.deploy;
       clones.push(data.clone);
     }));
 
@@ -79,6 +83,8 @@ class Bot {
 
         this.websocket.emit('initialsetup',{
           issues,
+          pr,
+          deployedUrl,
           comment: `Github: https://github.com/${config.github.repoOwner}/${config.github.repo}/pull/${pr.number}\n${serverLinks}`,
         });
 
@@ -88,6 +94,29 @@ class Bot {
 
   setWebsocket(io) {
     this.websocket = io;
+    this.websocket.on('connection', socket => {
+      socket.on(
+        'e2e:fail',
+        ({ pr }) => this.postComment(pr.number, `E2E tests failed, please [click here](http://xcaliber-bot.herokuapp.com/e2e/${pr.number}) to re-run.`),
+      );
+      socket.on('e2e:success', ({ pr }) => this.postComment(pr.number, `E2E test passed`));
+    });
+  }
+
+  reRunTests(pr) {
+    let deployedUrl = {};
+
+    this.getComments(pr.number, comments => {
+      let selectedComment = comments.filter(comment => comment.body.indexOf('Deployment link(s):') !== -1 && comment.body.indexOf('Cloned PR(s):') !== -1)[0];
+      selectedComment.body
+        .split('Deployment link(s):')[1]
+        .split('Cloned PR(s):')[0]
+        .split('\n')
+        .filter(item => item.split(': ').length === 2)
+        .map(item => deployedUrl[item.split(': ')[0]] = item.split(': ')[1]);
+
+      this.getIssues(pr, issues => this.websocket.emit('e2e:re-run', { issues, pr, deployedUrl }));
+    });
   }
 
   checkReviews(pr, callback) {
@@ -275,6 +304,14 @@ class Bot {
       repo: config.github.repo,
       number: number,
       body: comment
+    }, this.genericAction('postComment: Error while trying to post instructions', callback));
+  }
+
+  getComments(number, callback) {
+    this.github.issues.getComments({
+      owner: config.github.repoOwner,
+      repo: config.github.repo,
+      number: number,
     }, this.genericAction('postComment: Error while trying to post instructions', callback));
   }
 

@@ -32,8 +32,6 @@ router.post('/', function (req, res) {
   }
 });
 
-setInterval(item => Bot.websocket.emit('ping', new Date()), 5000);
-
 router.get('/all', function (req, res) {
   Bot.getPullRequests(res => {
     res.json({ status: 'Doing initialSetup on ' + res.length + ' PRS' });
