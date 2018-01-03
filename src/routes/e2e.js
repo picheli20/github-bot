@@ -8,7 +8,7 @@ let log = [];
 router.get('/:id', function (req, res) {
   Bot.getPullRequest(req.params.id, pr => {
     res.json({ status: 'Running tests on ' + pr.title });
-    Bot.reRunTests(pr);
+    Bot.runTests(pr);
   });
 });
 

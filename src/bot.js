@@ -80,14 +80,6 @@ class Bot {
         }
 
         this.postComment(pr.number, `${serverLinks}\n${commentLinks}`);
-
-        this.websocket.emit('initialsetup',{
-          issues,
-          pr,
-          deployedUrl,
-          comment: `Github: https://github.com/${config.github.repoOwner}/${config.github.repo}/pull/${pr.number}\n${serverLinks}`,
-        });
-
       });
     }, 5000);
   }
@@ -102,13 +94,21 @@ class Bot {
           this.addLabels(pr, ['e2e:fail']);
         },
       );
-      socket.on('e2e:success', ({ pr }) => this.addLabels(pr, ['e2e:success']));
+      socket.on('e2e:success', ({ pr }) => {
+        this.removeLabel(pr, 'e2e:fail');
+        this.addLabels(pr, ['e2e:success']);
+      });
     });
   }
 
-  reRunTests(pr) {
-    let deployedUrl = {};
+  runTests(pr) {
+    this.getDeployedUrls(pr, deployedUrl => {
+      this.getIssues(pr, issues => this.websocket.emit('e2e:run', { issues, pr, deployedUrl }));
+    });
+  }
 
+  getDeployedUrls(pr, callback) {
+    let deployedUrl = {};
     this.getComments(pr.number, comments => {
       let selectedComment = comments.filter(comment => comment.body.indexOf('Deployment link(s):') !== -1 && comment.body.indexOf('Cloned PR(s):') !== -1)[0];
       selectedComment.body
@@ -118,7 +118,7 @@ class Bot {
         .filter(item => item.split(': ').length === 2)
         .map(item => deployedUrl[item.split(': ')[0]] = item.split(': ')[1]);
 
-      this.getIssues(pr, issues => this.websocket.emit('e2e:re-run', { issues, pr, deployedUrl }));
+      callback(deployedUrl);
     });
   }
 
@@ -150,7 +150,9 @@ class Bot {
 
         if (rejected === 0 && approved >= config.github.reviewsNeeded) {
           this.addLabels(pr, [config.github.label.ready], callback);
-          this.getIssues(pr, issues => this.websocket.emit('approved', { issues }));
+          this.getDeployedUrls(deployedUrls => {
+            this.getIssues(pr, issues => this.websocket.emit('approved', { issues, pr, deployedUrls}));
+          });
         }
       }
     ));
@@ -289,6 +291,15 @@ class Bot {
       repo: config.github.repo,
       number: pr.number,
       labels
+    }, this.genericAction('addLabels: Error while trying add labels', callback));
+  }
+
+  removeLabel (pr, label, callback) {
+    this.github.issues.removeLabel({
+      owner: config.github.repoOwner,
+      repo: config.github.repo,
+      number: pr.number,
+      name: label
     }, this.genericAction('addLabels: Error while trying add labels', callback));
   }
 
