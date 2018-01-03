@@ -80,6 +80,12 @@ class Bot {
         }
 
         this.postComment(pr.number, `${serverLinks}\n${commentLinks}`);
+        this.websocket.emit('initialsetup',{
+          issues,
+          pr,
+          deployedUrl,
+          comment: `Github: https://github.com/${config.github.repoOwner}/${config.github.repo}/pull/${pr.number}\n${serverLinks}`,
+        });
       });
     }, 5000);
   }
