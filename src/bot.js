@@ -195,7 +195,7 @@ class Bot {
     };
 
     if (jiraAndType) {
-      commit.issue = `${jiraAndType[1]-jiraAndType[2]}`;
+      commit.issue = `${jiraAndType[1]}-${jiraAndType[2]}`;
       commit.project = jiraAndType[1];
       commit.type = jiraAndType[3];
     }
