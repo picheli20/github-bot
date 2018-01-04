@@ -178,23 +178,29 @@ class Bot {
 
   }
 
+  /**
+   * Extract some data from the commit message.
+   *
+   * @param {string} commitMessage
+   * @returns {object}
+   */
   parseCommit(commitMessage) {
-    const jiraAndType = commitMessage.match(config.github.firstCommitRegex);
-    let issue = '';
-    let project = '';
-    let type = '';
-    if (jiraAndType) {
-      const splittedMessage = jiraAndType[0].split(' ');
-      issue = splittedMessage[0];
-      project = issue.split('-')[0];
-      type = splittedMessage[1].substring(0, splittedMessage[1].indexOf('('));
-    }
-    return {
-      type,
-      project,
-      issue,
+    const jiraAndType = commitMessage.match(config.github.commitRegex);
+
+    const commit = {
+      issue: '',
+      project: '',
+      type: '',
       valid: jiraAndType !== null,
+    };
+
+    if (jiraAndType) {
+      commit.issue = `${jiraAndType[1]-jiraAndType[2]}`;
+      commit.project = jiraAndType[1];
+      commit.type = jiraAndType[3];
     }
+
+    return commit;
   }
 
   updateLabels(pr, callback) {
