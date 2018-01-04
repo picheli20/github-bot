@@ -33,7 +33,7 @@ const config = {
         XCAF: pe.GITHUB_REVIWERS_XCAF || '',
       }
     },
-    firstCommitRegex: /(?:[A-Z0-9]+-\d+ (?:feat|fix|perf|revert|docs|style|refactor|test|chore)\([^ )]*\): .+|Release \d+\.\d+\.\d+)/,
+    firstCommitRegex: /^[A-Z0-9]+-\d+ (?:feat|fix|perf|revert|docs|style|refactor|test|chore)\b/,
     typeLabelMap: {
       'fix': 'bug',
       'chore': 'chore',

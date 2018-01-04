@@ -179,12 +179,12 @@ class Bot {
   }
 
   parseCommit(commitMessage) {
-    const valid = config.github.firstCommitRegex.test(commitMessage);
+    const jiraAndType = commitMessage.match(config.github.firstCommitRegex);
     let issue = '';
     let project = '';
     let type = '';
-    if (valid) {
-      const splittedMessage = commitMessage.split(' ');
+    if (jiraAndType) {
+      const splittedMessage = jiraAndType[0].split(' ');
       issue = splittedMessage[0];
       project = issue.split('-')[0];
       type = splittedMessage[1].substring(0, splittedMessage[1].indexOf('('));
@@ -193,7 +193,7 @@ class Bot {
       type,
       project,
       issue,
-      valid,
+      valid: jiraAndType !== null,
     }
   }
 
