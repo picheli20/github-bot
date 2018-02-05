@@ -1,7 +1,7 @@
 const pe = process.env;
 
 const config = {
-  projects: ['CRES', 'ELNEW', 'XCAF'],
+  projects: ['CRES', 'ELNEW', 'XCAF', 'FF'],
   herokuApp: pe.HEROKU_APP || '',
   jira: {
     url: pe.JIRA_URL || 'https://jira.cherrytech.com/',
@@ -17,6 +17,11 @@ const config = {
         repo: pe.GH_REPO_CLONE_CRESUS || '',
         owner: pe.GH_REPO_CLONE_CRESUS_OWNER || '',
         herokuApp: pe.GH_REPO_CLONE_CRESUS_HEROKU_APP || '',
+      },
+      FF: {
+        repo: pe.GH_REPO_CLONE_FF || '',
+        owner: pe.GH_REPO_CLONE_FF_OWNER || '',
+        herokuApp: pe.GH_REPO_CLONE_FF_HEROKU_APP || '',
       },
     },
     label: {
