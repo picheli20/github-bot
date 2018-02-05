@@ -1,7 +1,7 @@
 const pe = process.env;
 
 const config = {
-  projects: ['CRES', 'ELNEW', 'XCAF'],
+  projects: ['CRES', 'ELNEW', 'XCAF', 'FF'],
   herokuApp: pe.HEROKU_APP || '',
   jira: {
     url: pe.JIRA_URL || 'https://jira.cherrytech.com/',
