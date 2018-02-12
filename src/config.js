@@ -3,6 +3,8 @@ const pe = process.env;
 const config = {
   projects: ['CRES', 'ELNEW', 'XCAF', 'FF'],
   herokuApp: pe.HEROKU_APP || '',
+  screenshotUrl: pe.SCREENSHOT_URL || '',
+  skinName: 'eurolotto',
   jira: {
     url: pe.JIRA_URL || 'https://jira.cherrytech.com/',
   },
@@ -14,11 +16,13 @@ const config = {
     repoOwner: pe.GH_REPO_OWNER || '',
     clone: {
       CRES: {
+        skinName: 'cresuscasino',
         repo: pe.GH_REPO_CLONE_CRESUS || '',
         owner: pe.GH_REPO_CLONE_CRESUS_OWNER || '',
         herokuApp: pe.GH_REPO_CLONE_CRESUS_HEROKU_APP || '',
       },
       FF: {
+        skinName: 'frankandfred',
         repo: pe.GH_REPO_CLONE_FF || '',
         owner: pe.GH_REPO_CLONE_FF_OWNER || '',
         herokuApp: pe.GH_REPO_CLONE_FF_HEROKU_APP || '',
@@ -47,6 +51,11 @@ const config = {
       'refactor': 'refactor',
       'test': 'test',
       'perf': 'perf',
+    },
+    skinName: {
+      ELNEW: 'eurolotto',
+      CRES: 'cresuscasino',
+      FF: 'frankandfred',
     }
   },
 };

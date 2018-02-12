@@ -10,9 +10,14 @@
   "author": "XCaliber",
   "license": "MIT",
   "dependencies": {
+    "axios": "^0.17.1",
     "body-parser": "^1.18.2",
     "express": "^4.16.2",
     "github": "^13.0.1",
     "socket.io": "^2.0.4"
+  },
+  "engines": {
+    "node": "^8.0.0",
+    "npm": "~5.5.0"
   }
 }
