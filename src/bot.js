@@ -42,7 +42,7 @@ class Bot {
     let serverLinks = `Deployment link(s): \nELNEW: ${this.getLink(config.herokuApp, pr.number)}`;
     deployedUrl['ELNEW'] = this.getLink(config.herokuApp, pr.number);
 
-    const regression = `Regression Page: \n https://xc-screenshot-regression-www.herokuapp.com/regressions/${pr.head.ref}`;
+    const regression = `Regression Page: \n http://xc-screenshot-regression-www.herokuapp.com/regressions/${pr.head.ref}`;
 
     this.doForEachClone(project => this.clonePr(pr, project, data => {
       serverLinks = `${serverLinks} \n${project}: ${data.deploy}`;
