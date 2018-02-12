@@ -42,6 +42,8 @@ class Bot {
     let serverLinks = `Deployment link(s): \nELNEW: ${this.getLink(config.herokuApp, pr.number)}`;
     deployedUrl['ELNEW'] = this.getLink(config.herokuApp, pr.number);
 
+    const regression = `Regression Page: \n https://xc-screenshot-regression-www.herokuapp.com/regressions/${pr.head.ref}`;
+
     this.doForEachClone(project => this.clonePr(pr, project, data => {
       serverLinks = `${serverLinks} \n${project}: ${data.deploy}`;
       deployedUrl[project] = data.deploy;
@@ -79,12 +81,12 @@ class Bot {
           issues.forEach(issue => commentLinks += `\n${config.jira.url}browse/${issue}`)
         }
 
-        this.postComment(pr.number, `${serverLinks}\n${commentLinks}`);
+        this.postComment(pr.number, `${serverLinks}\n${commentLinks}\n${regression}`);
         this.websocket.emit('initialsetup',{
           issues,
           pr,
           deployedUrl,
-          comment: `Github: https://github.com/${config.github.repoOwner}/${config.github.repo}/pull/${pr.number}\n${serverLinks}`,
+          comment: `Github: https://github.com/${config.github.repoOwner}/${config.github.repo}/pull/${pr.number}\n${serverLinks}\n${regression}`,
         });
       });
     }, 5000);
