@@ -32,6 +32,7 @@ router.post('/', function (req, res) {
 
     Bot.getPullRequest(prNumber, pr => {
       const branch = pr.head.ref;
+      Bot.websocket.emit('screenshot', { branch, skin, domain });
       axios.post(`${config.screenshotUrl}/screenshot`, { branch, skin, domain })
         .then(status => console.log({ status: 'Checking...', status }))
         .catch(error => console.log({ status: 'Error', error }));
