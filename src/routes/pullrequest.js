@@ -7,6 +7,7 @@ const axios = require("axios");
 let log = [];
 
 router.post('/', function (req, res) {
+  res.json({ status: 'Checking', isDeply: req.body.deployment_status && req.body.deployment_status.state === 'success' })
 
   if (!req.body) {
     return console.error('POST Request received, but no body!');
@@ -32,25 +33,25 @@ router.post('/', function (req, res) {
     Bot.getPullRequest(prNumber, pr => {
       const branch = pr.head.ref;
       axios.post(`${config.screenshotUrl}/screenshot`, { branch, skin, domain })
-        .then(status => res.json({ status: 'Checking...', status }))
-        .catch(error => res.json({ status: 'Error', error }));
+        .then(status => console.log({ status: 'Checking...', status }))
+        .catch(error => console.log({ status: 'Error', error }));
     });
   } else {
     switch (req.body.action) {
       case 'opened':
-        res.json({ status: 'Checking openned' });
+        console.log({ status: 'Checking openned' });
         Bot.initialSetup(pr);
         break;
       case 'submitted':
-        res.json({ status: 'Checking review' });
+        console.log({ status: 'Checking review' });
         Bot.checkReviews(pr);
         break;
       case 'closed':
         Bot.doForEachClone(project => Bot.closeClone(pr, project));
         if (pr.merged_at) Bot.getIssues(pr, issues => Bot.websocket.emit('merged', { issues }));
         axios.post(`${config.screenshotUrl}/purge`, { branch: pr.head.ref })
-          .then(status => res.json({ status: 'Checking closed...', status }))
-          .catch(error => res.json({ status: 'Error closed', error }));
+          .then(status => console.log({ status: 'Checking closed...', status }))
+          .catch(error => console.log({ status: 'Error closed', error }));
 
         break;
     }
