@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const Bot = require('../bot');
 const config = require('../config');
-const axios = require("axios");
 
 let log = [];
 
@@ -30,13 +29,7 @@ router.post('/', function (req, res) {
       skin = config.github.clone[result[0]].skinName;
     }
 
-    Bot.getPullRequest(prNumber, pr => {
-      const branch = pr.head.ref;
-      Bot.websocket.emit('screenshot', { branch, skin, domain });
-      axios.post(`${config.screenshotUrl}/screenshot`, { branch, skin, domain })
-        .then(status => console.log({ status: 'Checking...', status }))
-        .catch(error => console.log({ status: 'Error', error }));
-    });
+    Bot.getPullRequest(prNumber, pr => Bot.websocket.emit('screenshot:create', { branch: pr.head.ref, skin, domain }));
   } else {
     switch (req.body.action) {
       case 'opened':
@@ -50,10 +43,7 @@ router.post('/', function (req, res) {
       case 'closed':
         Bot.doForEachClone(project => Bot.closeClone(pr, project));
         if (pr.merged_at) Bot.getIssues(pr, issues => Bot.websocket.emit('merged', { issues }));
-        axios.post(`${config.screenshotUrl}/purge`, { branch: pr.head.ref })
-          .then(status => console.log({ status: 'Checking closed...', status }))
-          .catch(error => console.log({ status: 'Error closed', error }));
-
+        Bot.websocket.emit('screenshot:purge', { branch: pr.head.ref });
         break;
     }
   }
