@@ -1,4 +1,5 @@
 const express = require('express');
+const Bot = require('../bot');
 const router = express.Router();
 
 let log = [];
