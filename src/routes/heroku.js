@@ -18,8 +18,4 @@ router.post('/', function (req, res) {
   res.json({ status: 'Up and running ' });
 });
 
-router.get('/log', function (req, res) {
-  res.json({ log });
-});
-
 module.exports = router;

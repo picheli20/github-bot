@@ -13,7 +13,7 @@ router.post('/', function (req, res) {
   }
 
   const pr = req.body.pull_request;
-  log.unshift({ action: req.body.action, pr});
+  log.unshift(pr);
   if(log.length > 50) {
     log.pop();
   }
@@ -21,7 +21,7 @@ router.post('/', function (req, res) {
   if (req.body.deployment_status && req.body.deployment_status.state === 'success') {
     const domain = req.body.deployment.payload.web_url; // example: https://eurolotto-staging-pr-664.herokuapp.com/
     const environment = req.body.deployment.environment; //  example: eurolotto-staging-pr-811
-    const [app, prNumber] = environment.split('pr-');
+    const [app, prNumber] = environment.split('-pr-');
     let skin = config.skinName;
 
     const result = config.projects.filter(item => config.github.clone[item] && config.github.clone[item].herokuApp === app);
