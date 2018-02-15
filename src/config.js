@@ -38,8 +38,9 @@ const config = {
     reviwers: {
       teams: {
         CRES: pe.GITHUB_REVIWERS_CRES || '',
-        ELNEW: pe.GITHUB_REVIWERS_ELNEW || '',
         XCAF: pe.GITHUB_REVIWERS_XCAF || '',
+        ELNEW: pe.GITHUB_REVIWERS_ELNEW || '',
+        FF: pe.GITHUB_REVIWERS_FF || '',
       }
     },
     commitRegex: /^([A-Z0-9]+)-(\d+) ([a-z]+)\b/,
