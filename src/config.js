@@ -44,10 +44,10 @@ const config = {
     reviwers: {
       teams: {
         CRES: pe.GITHUB_REVIWERS_CRES || '',
-        ELNEW: pe.GITHUB_REVIWERS_ELNEW || '',
         XCAF: pe.GITHUB_REVIWERS_XCAF || '',
-        VC: pe.GITHUB_REVIWERS_VC || '',
+        ELNEW: pe.GITHUB_REVIWERS_ELNEW || '',
         FF: pe.GITHUB_REVIWERS_FF || '',
+        VC: pe.GITHUB_REVIWERS_VC || '',
       }
     },
     commitRegex: /^([A-Z0-9]+)-(\d+) ([a-z]+)\b/,
