@@ -6,9 +6,9 @@ const config = require('../config');
 let log = [];
 
 router.post('/', function (req, res) {
-  res.json({ status: 'Checking', isDeply: req.body.deployment_status && req.body.deployment_status.state === 'success' })
 
   if (!req.body) {
+    res.json({ error: 'POST Request received, but no body!' });
     return console.error('POST Request received, but no body!');
   }
 
@@ -19,31 +19,39 @@ router.post('/', function (req, res) {
   }
 
   if (req.body.deployment_status && req.body.deployment_status.state === 'success') {
-    const domain = req.body.deployment.payload.web_url; // example: https://eurolotto-staging-pr-664.herokuapp.com/
-    const environment = req.body.deployment.environment; //  example: eurolotto-staging-pr-811
+    const domain = req.body.deployment.payload.web_url; // example: "web_url": "https://xcaliber-ci-pr-179.herokuapp.com/"
+    const environment = req.body.deployment.environment; //  example: "environment": "xcaliber-ci-pr-179",
     const [app, prNumber] = environment.split('-pr-');
     let skin = config.skinName;
 
     const result = config.projects.filter(item => config.github.clone[item] && config.github.clone[item].herokuApp === app);
+
     if (result.length === 1) {
       skin = config.github.clone[result[0]].skinName;
     }
 
-    Bot.getPullRequest(prNumber, pr => Bot.websocket.emit('screenshot:create', { branch: pr.head.ref, skin, domain }));
+    Bot.getPullRequest(prNumber, pr => {
+      res.json({ status: 'Calling screenshot:create ', data: { branch: pr.head.ref, skin, domain } });
+      Bot.websocket.emit('screenshot:create', { branch: pr.head.ref, skin, domain });
+    });
   } else {
     switch (req.body.action) {
       case 'opened':
-        console.log({ status: 'Checking openned' });
+        res.json({ status: 'Checking openned' });
         Bot.initialSetup(pr);
         break;
       case 'submitted':
-        console.log({ status: 'Checking review' });
+        res.json({ status: 'Checking review' });
         Bot.checkReviews(pr);
         break;
       case 'closed':
+        res.json({ status: 'Closing' });
         Bot.doForEachClone(project => Bot.closeClone(pr, project));
         if (pr.merged_at) Bot.getIssues(pr, issues => Bot.websocket.emit('merged', { issues }));
         Bot.websocket.emit('screenshot:purge', { branch: pr.head.ref });
+        break;
+      default:
+        res.json({ status: 'Default, no action' });
         break;
     }
   }
