@@ -229,7 +229,7 @@ class Bot {
 
   setReviwers(pr, callback) {
     const team = config.projects.filter(item => pr.title.indexOf(item) > -1)[0] || config.projects[0];
-    const reviewers = config.github.reviwers.teams[team].split(' ');
+    const reviewers = config.github.reviwers[team];
 
     const myIndex = reviewers.indexOf(pr.user.login);
     if (myIndex > -1) {

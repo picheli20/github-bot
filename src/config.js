@@ -1,10 +1,12 @@
 const pe = process.env;
 
+const projectInfos = JSON.parse(pe.PROJECTS_INFOS);
+
 const config = {
-  projects: ['CRES', 'ELNEW', 'XCAF', 'FF', 'VC', 'SM'],
-  herokuApp: pe.HEROKU_APP || '',
+  projects: projectInfos.projects,
+  herokuApp: projectInfos.main.herokuApp, //pe.HEROKU_APP || '',
   screenshotUrl: pe.SCREENSHOT_URL || '',
-  skinName: 'eurolotto',
+  skinName: projectInfos.main.skinName,
   jira: {
     url: pe.JIRA_URL || 'https://jira.cherrytech.com/',
   },
@@ -12,48 +14,14 @@ const config = {
     user: pe.GH_USER || '',
     password: pe.GH_PASSWORD || '',
     oauth2token:  pe.OAUTH2TOKEN || '',
-    repo: pe.GH_REPO || '',
-    repoOwner: pe.GH_REPO_OWNER || '',
-    clone: {
-      CRES: {
-        skinName: 'cresuscasino',
-        repo: pe.GH_REPO_CLONE_CRESUS || '',
-        owner: pe.GH_REPO_CLONE_CRESUS_OWNER || '',
-        herokuApp: pe.GH_REPO_CLONE_CRESUS_HEROKU_APP || '',
-      },
-      FF: {
-        skinName: 'frankandfred',
-        repo: pe.GH_REPO_CLONE_FF || '',
-        owner: pe.GH_REPO_CLONE_FF_OWNER || '',
-        herokuApp: pe.GH_REPO_CLONE_FF_HEROKU_APP || '',
-      },
-      VC: {
-        skinName: 'vegascasino',
-        repo: pe.GH_REPO_CLONE_VC || '',
-        owner: pe.GH_REPO_CLONE_VC_OWNER || '',
-        herokuApp: pe.GH_REPO_CLONE_VC_HEROKU_APP || '',
-      },
-      SM: {
-        skinName: 'sunmaker',
-        repo: pe.GH_REPO_CLONE_SM || '',
-        owner: pe.GH_REPO_CLONE_SM_OWNER || '',
-        herokuApp: pe.GH_REPO_CLONE_SM_HEROKU_APP || '',
-      },
-    },
+    repo: projectInfos.main.repo,
+    repoOwner: projectInfos.main.owner,
+    clone: projectInfos.clones,
     label: {
       ready: 'ready for test',
       dontReview: 'don\'t review',
     },
-    reviwers: {
-      teams: {
-        CRES: pe.GITHUB_REVIWERS_CRES || '',
-        XCAF: pe.GITHUB_REVIWERS_XCAF || '',
-        ELNEW: pe.GITHUB_REVIWERS_ELNEW || '',
-        FF: pe.GITHUB_REVIWERS_FF || '',
-        VC: pe.GITHUB_REVIWERS_VC || '',
-        SM: pe.GITHUB_REVIWERS_SM || '',
-      }
-    },
+    reviwers: projectInfos.reviwers,
     api: pe.GITHUB_URL || '',
     reviewsNeeded: 2,
     instructionsComment: pe.GITHUB_INTRO_COMMENT || '',
