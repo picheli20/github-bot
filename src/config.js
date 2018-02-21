@@ -44,9 +44,6 @@ const config = {
       ready: 'ready for test',
       dontReview: 'don\'t review',
     },
-    api: pe.GITHUB_URL || '',
-    reviewsNeeded: 2,
-    instructionsComment: pe.GITHUB_INTRO_COMMENT || '',
     reviwers: {
       teams: {
         CRES: pe.GITHUB_REVIWERS_CRES || '',
@@ -57,6 +54,9 @@ const config = {
         SM: pe.GITHUB_REVIWERS_SM || '',
       }
     },
+    api: pe.GITHUB_URL || '',
+    reviewsNeeded: 2,
+    instructionsComment: pe.GITHUB_INTRO_COMMENT || '',
     commitRegex: /^([A-Z0-9]+)-(\d+) ([a-z]+)\b/,
     typeLabelMap: {
       'fix': 'bug',
@@ -66,13 +66,6 @@ const config = {
       'refactor': 'refactor',
       'test': 'test',
       'perf': 'perf',
-    },
-    skinName: {
-      ELNEW: 'eurolotto',
-      CRES: 'cresuscasino',
-      FF: 'frankandfred',
-      VC: 'vegascasino',
-      SM: 'sunmaker',
     }
   },
 };
