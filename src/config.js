@@ -4,7 +4,7 @@ const projectInfos = JSON.parse(pe.PROJECTS_INFOS);
 
 const config = {
   projects: projectInfos.projects,
-  herokuApp: projectInfos.main.herokuApp, //pe.HEROKU_APP || '',
+  herokuApp: projectInfos.main.herokuApp,
   screenshotUrl: pe.SCREENSHOT_URL || '',
   skinName: projectInfos.main.skinName,
   jira: {
