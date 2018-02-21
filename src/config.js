@@ -1,7 +1,7 @@
 const pe = process.env;
 
 const config = {
-  projects: ['CRES', 'ELNEW', 'XCAF', 'FF', 'VC'],
+  projects: ['CRES', 'ELNEW', 'XCAF', 'FF', 'VC', 'SM'],
   herokuApp: pe.HEROKU_APP || '',
   screenshotUrl: pe.SCREENSHOT_URL || '',
   skinName: 'eurolotto',
@@ -33,6 +33,12 @@ const config = {
         owner: pe.GH_REPO_CLONE_VC_OWNER || '',
         herokuApp: pe.GH_REPO_CLONE_VC_HEROKU_APP || '',
       },
+      SM: {
+        skinName: 'sunmaker',
+        repo: pe.GH_REPO_CLONE_SM || '',
+        owner: pe.GH_REPO_CLONE_SM_OWNER || '',
+        herokuApp: pe.GH_REPO_CLONE_SM_HEROKU_APP || '',
+      },
     },
     label: {
       ready: 'ready for test',
@@ -48,6 +54,7 @@ const config = {
         ELNEW: pe.GITHUB_REVIWERS_ELNEW || '',
         FF: pe.GITHUB_REVIWERS_FF || '',
         VC: pe.GITHUB_REVIWERS_VC || '',
+        SM: pe.GITHUB_REVIWERS_SM || '',
       }
     },
     commitRegex: /^([A-Z0-9]+)-(\d+) ([a-z]+)\b/,
@@ -65,6 +72,7 @@ const config = {
       CRES: 'cresuscasino',
       FF: 'frankandfred',
       VC: 'vegascasino',
+      SM: 'sunmaker',
     }
   },
 };
