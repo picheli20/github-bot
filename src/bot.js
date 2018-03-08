@@ -32,7 +32,7 @@ class Bot {
   }
 
   initialSetup(pr) {
-    this.setReviwers(pr);
+    this.setReviewers(pr);
     this.selfAssignee(pr);
     this.updateLabels(pr);
 
@@ -227,9 +227,9 @@ class Bot {
     });
   }
 
-  setReviwers(pr, callback) {
+  setReviewers(pr, callback) {
     const team = config.projects.filter(item => pr.title.indexOf(item) > -1)[0] || config.projects[0];
-    const reviewers = config.github.reviwers[team];
+    const reviewers = config.github.reviewers[team];
 
     const myIndex = reviewers.indexOf(pr.user.login);
     if (myIndex > -1) {

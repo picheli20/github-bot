@@ -21,7 +21,7 @@ const config = {
       ready: 'ready for test',
       dontReview: 'don\'t review',
     },
-    reviwers: projectInfos.reviwers,
+    reviewers: projectInfos.reviewers,
     api: pe.GITHUB_URL || '',
     reviewsNeeded: 2,
     instructionsComment: pe.GITHUB_INTRO_COMMENT || '',
