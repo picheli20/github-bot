@@ -5,6 +5,11 @@ const config = require('../config');
 
 let log = [];
 
+function callSRT(branch, skin, domain, res) {
+  res.json({ status: 'Calling screenshot:create ', data: { branch, skin, domain } });
+  Bot.websocket.emit('screenshot:create', { branch, skin, domain });
+}
+
 router.post('/', function (req, res) {
 
   if (!req.body) {
@@ -30,10 +35,24 @@ router.post('/', function (req, res) {
       skin = config.github.clone[result[0]].skinName;
     }
 
-    Bot.getPullRequest(prNumber, pr => {
-      res.json({ status: 'Calling screenshot:create ', data: { branch: pr.head.ref, skin, domain } });
-      Bot.websocket.emit('screenshot:create', { branch: pr.head.ref, skin, domain });
-    });
+    if (!prNumber) {
+      res.json({ status: 'PR number cannot be undefined' });
+      return;
+    }
+
+    if (req.body.repository.fork) {
+      Bot.getOtherPR({
+        owner: req.body.repository.owner.login,
+        number: prNumber
+      }, clonePR => {
+        Bot.getPullRequest(
+          clonePR.title.split(`[clone-`)[1].split(`]`)[0],
+          pr => callSRT(pr.head.ref, skin, domain, res)
+        );
+      })
+    } else {
+      Bot.getPullRequest(prNumber, pr => callSRT(pr.head.ref, skin, domain, res));
+    }
   } else {
     switch (req.body.action) {
       case 'opened':

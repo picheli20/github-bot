@@ -374,6 +374,14 @@ class Bot {
     }, this.genericAction('get: Error while fetching PR ', callback));
   }
 
+  getOtherPR(prInfo = {}, callback) {
+    this.github.pullRequests.get({
+        owner: prInfo.owner || config.github.repoOwner,
+        repo: prInfo.repo || config.github.repo,
+        number: prInfo.number
+    }, this.genericAction('get: Error while fetching PR ', callback));
+  }
+
   genericAction(message, callback) {
     return (error, result) => {
       if (error) {
