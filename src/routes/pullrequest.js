@@ -101,4 +101,8 @@ router.get('/:id', function (req, res) {
   });
 });
 
+router.get('/info/:id', function (req, res) {
+  Bot.getPullRequest(req.params.id, pr => res.json(pr));
+});
+
 module.exports = router;

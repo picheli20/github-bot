@@ -32,6 +32,12 @@ class Bot {
   }
 
   initialSetup(pr) {
+    if (pr.base.user.login !== pr.head.user.login) {
+      const warningMessage = `Dude... As part of transitioning XCAF to our internal infrastructure you should use \`git push upstream\` to push in \`xcaliber-private\` instead of pushing in \`${pr.head.label}\``;
+      this.postComment(pr.number, warningMessage, () => this.closePr(pr.number));
+      return;
+    }
+
     this.setReviewers(pr);
     this.selfAssignee(pr);
     this.updateLabels(pr);
@@ -285,7 +291,7 @@ class Bot {
       clones => {
         let clone = clones.filter(clone => clone.title.indexOf(`[clone-${pr.number}]`) > -1);
         if(clone.length === 0) {
-          this.postComment(pr.number, `Clone for ${project} not found`, callback);
+          // this.postComment(pr.number, `Clone for ${project} not found`, callback);
           return;
         }
 
@@ -297,6 +303,15 @@ class Bot {
         }, this.genericAction('issues.edit: Error while closing a cloned pull request', callback));
       }
     ));
+  }
+
+  closePr(pr, callback) {
+    this.github.issues.edit({
+      owner: config.github.repoOwner,
+      repo: config.github.repo,
+      number: pr,
+      state: 'closed',
+    }, this.genericAction('issues.edit: Error while closing a cloned pull request', callback));
   }
 
   addLabels (pr, labels, callback) {
