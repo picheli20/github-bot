@@ -105,4 +105,21 @@ router.get('/info/:id', function (req, res) {
   Bot.getPullRequest(req.params.id, pr => res.json(pr));
 });
 
+router.get('/deploy/:id', function (req, res) {
+  Bot.getPullRequest(req.params.id, (pr) => {
+    const deployments = config.projects.map((skin) => Bot.falconDeploy(pr, config.projectsInfo[skin]));
+    let comment = 'Deployment link(s):\n';
+
+    deployments.map(item => comment += `${item.skin}: ${item.link}\n`);
+
+    Bot.postComment(pr.number, `${comment}`);
+
+    res.json({
+      status: `Deploying ${pr.head.ref}`,
+      branches: config.projects,
+      deployments
+    });
+  });
+});
+
 module.exports = router;

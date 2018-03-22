@@ -1,12 +1,11 @@
 const pe = process.env;
 
 const projectInfos = JSON.parse(pe.PROJECTS_INFOS);
-
 const config = {
+  falconUrl: projectInfos.falconUrl,
   projects: projectInfos.projects,
-  herokuApp: projectInfos.main.herokuApp,
+  projectsInfo: projectInfos.projectsInfo,
   screenshotUrl: pe.SCREENSHOT_URL || '',
-  skinName: projectInfos.main.skinName,
   jira: {
     url: pe.JIRA_URL || 'https://jira.cherrytech.com/',
   },
@@ -14,9 +13,8 @@ const config = {
     user: pe.GH_USER || '',
     password: pe.GH_PASSWORD || '',
     oauth2token:  pe.OAUTH2TOKEN || '',
-    repo: projectInfos.main.repo,
-    repoOwner: projectInfos.main.owner,
-    clone: projectInfos.clones,
+    repo: 'xc-r2d2',
+    repoOwner: 'xcaliber-private',
     label: {
       ready: 'ready for test',
       dontReview: 'don\'t review',

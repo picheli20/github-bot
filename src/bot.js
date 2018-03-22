@@ -1,5 +1,6 @@
 const config = require('./config');
 const GitHubApi = require('github');
+const axios = require('axios');
 
 class Bot {
 
@@ -31,6 +32,66 @@ class Bot {
     })
   }
 
+  getFalconComponent(deploy = false, image = null, tag = null, branch = null, type, config = {}) {
+    return {
+      deploy,
+      image,
+      tag,
+      branch,
+      config,
+      type
+    };
+  }
+
+  falconDeploy(pr, skinInfo) {
+    const expirationTime = 2592000;
+    const componentName = `xc-r2d2-${skinInfo.skinName}`;
+    const slug = `${pr.head.ref}-${skinInfo.skinName}`.toLocaleLowerCase();
+
+    const payload = {
+      fullOwner: pr.head.user.login,
+      brand: skinInfo.skinName,
+      description: 'Auto generated branch from xcaliber-bot',
+      expirationTime,
+      fullOwner: pr.head.user.login,
+      owner: pr.head.user.login,
+      fullName: pr.head.ref,
+      slug,
+      components: {
+        coreapi: this.getFalconComponent(),
+        backoffice2: this.getFalconComponent(),
+        backoffice3Api: this.getFalconComponent(),
+        backoffice3Portal: this.getFalconComponent(),
+        frontapi: this.getFalconComponent(),
+      },
+      config: {
+        coreapiDsn: 'tcp://app01-coreapi-stg.bmit.local:6666',
+        frontapiUrl: 'https://staging-frontapi.cherrytech.com',
+        backoffice3ApiUrl: 'https://staging-backoffice3-api.cherrytech.com',
+      }
+    }
+
+    payload.components[componentName] =
+      this.getFalconComponent(
+        true,
+        `eu.gcr.io/deployment-pipeline/xc-r2d2-${skinInfo.skinName}`,
+        null,
+        pr.head.ref,
+        'skin_xcaf',
+      );
+
+    this.websocket.emit('falcon:create',{ url: config.falconUrl, payload });
+
+    return {
+      skin: skinInfo.skinName,
+      link: this.getLink(componentName, slug),
+    };
+  }
+
+  getLink(componentName, slug) {
+    return `http://${componentName}-${slug}.kbox.k8s.xcaliber.io`;
+  }
+
   initialSetup(pr) {
     if (pr.base.user.login !== pr.head.user.login) {
       const warningMessage = `Dude... As part of transitioning XCAF to our internal infrastructure you should use \`git push upstream\` to push in \`xcaliber-private\` instead of pushing in \`${pr.head.label}\``;
@@ -45,57 +106,50 @@ class Bot {
     let clones = [];
     let deployedUrl = {};
 
-    let serverLinks = `Deployment link(s): \nELNEW: ${this.getLink(config.herokuApp, pr.number)}`;
-    deployedUrl['ELNEW'] = this.getLink(config.herokuApp, pr.number);
+    let serverLinks = 'Deployment link(s):\n';
+
+    config.projects.map(skinInfo => this.falconDeploy(pr, config.projectsInfo[skinInfo])).map(item => serverLinks += `${item.skin}: ${item.link}\n`);
 
     const regression = `\nRegression Page: \n ${config.screenshotUrl}${pr.head.ref}`;
 
-    this.doForEachClone(project => this.clonePr(pr, project, data => {
-      serverLinks = `${serverLinks} \n${project}: ${data.deploy}`;
-      deployedUrl[project] = data.deploy;
-      clones.push(data.clone);
-    }));
-
     let commentLinks = '';
+    if (config.github.instructionsComment !== '') {
+      commentLinks = `${config.github.instructionsComment}\n ${commentLinks}`
+    }
 
-    // Delay to wait for all the links be ready
-    setTimeout(() => {
-      if (config.github.instructionsComment !== '') {
-        commentLinks = `${config.github.instructionsComment}\n ${commentLinks}`
-      }
+    if (clones.length > 0) {
+      commentLinks += '\n\nCloned PR(s):'
+      clones.forEach(clone => commentLinks += `\nhttps://github.com/${clone.owner}/${clone.repo}/pull/${clone.number}`);
+    }
 
-      if (clones.length > 0) {
-        commentLinks += '\n\nCloned PR(s):'
-        clones.forEach(clone => commentLinks += `\nhttps://github.com/${clone.owner}/${clone.repo}/pull/${clone.number}`);
-      }
-
-      this.getCommits(pr, resp => {
-        const issues = [];
-        resp.forEach(item => {
-          const parsedCommit = this.parseCommit(item.commit.message);
-          if (!parsedCommit.valid) {
-            return;
-          }
-
-          if (issues.indexOf(parsedCommit.issue) === -1) {
-            issues.push(parsedCommit.issue);
-          }
-        });
-
-        if (config.jira.url && issues.length > 0) {
-          commentLinks += `\n\nJira issue(s):`
-          issues.forEach(issue => commentLinks += `\n${config.jira.url}browse/${issue}`)
+    this.getCommits(pr, resp => {
+      const issues = [];
+      resp.forEach(item => {
+        const parsedCommit = this.parseCommit(item.commit.message);
+        if (!parsedCommit.valid) {
+          return;
         }
 
-        this.postComment(pr.number, `${serverLinks}\n${commentLinks}\n${regression}`);
-        this.websocket.emit('initialsetup',{
-          issues,
-          pr,
-          deployedUrl,
-          comment: `Github: https://github.com/${config.github.repoOwner}/${config.github.repo}/pull/${pr.number}\n${serverLinks}\n${regression}`,
-        });
+        if (issues.indexOf(parsedCommit.issue) === -1) {
+          issues.push(parsedCommit.issue);
+        }
       });
-    }, 5000);
+
+      if (config.jira.url && issues.length > 0) {
+        commentLinks += `\n\nJira issue(s):`
+        issues.forEach(issue => commentLinks += `\n${config.jira.url}browse/${issue}`)
+      }
+
+      const comment = `${serverLinks}\n${commentLinks}\n${regression}`
+
+      this.postComment(pr.number, `${comment}`);
+      this.websocket.emit('initialsetup',{
+        issues,
+        pr,
+        deployedUrl,
+        comment: `Github: https://github.com/${config.github.repoOwner}/${config.github.repo}/pull/${pr.number}\n${comment}`,
+      });
+    });
   }
 
   setWebsocket(io) {
@@ -250,37 +304,6 @@ class Bot {
     }, this.genericAction('createReviewRequest: Error while fetching creating reviewers', callback));
   }
   // Clone
-  doForEachClone(callback) {
-    config.projects.forEach(project => {
-      if (!config.github.clone[project]) {
-        return;
-      }
-      callback(project);
-    });
-  }
-  clonePr (pr, project, callback) {
-    this.github.pullRequests.create({
-      title: `[clone-${pr.number}] ${pr.title}`,
-      body: `Original PR: https://github.com/${config.github.repoOwner}/${config.github.repo}/pull/${pr.number}`,
-      head: pr.head.label,
-      base: 'master',
-      owner: config.github.clone[project].owner,
-      repo: config.github.clone[project].repo,
-    }, (error, result) => {
-      if(error) {
-        return console.log('Clone PR error', error);
-      }
-
-      callback({
-        deploy: this.getLink(config.github.clone[project].herokuApp, result.data.number),
-        clone: {
-          ...config.github.clone[project],
-          number: result.data.number
-        },
-      });
-    });
-  }
-
   closeClone (pr, project, callback) {
     this.github.pullRequests.getAll({
       owner: config.github.clone[project].owner,
@@ -407,10 +430,6 @@ class Bot {
         callback(result.data);
       }
     }
-  }
-
-  getLink(number, app) {
-    return `https://${number}-pr-${app}.herokuapp.com/`;
   }
 }
 

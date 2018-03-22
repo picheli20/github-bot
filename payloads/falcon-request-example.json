@@ -1,0 +1,71 @@
+{
+  "fullName": "FF-33-login-account-dropdown",
+  "fullOwner": "mateuszos",
+  "description": "",
+  "expirationTime": 2592000,
+  "brand": "frankfred",
+  "slug": "ff-33-login-account-dropdown",
+  "owner": "mateuszos",
+  "components": {
+    "coreapi": {
+      "deploy": false,
+      "image": null,
+      "tag": null,
+      "branch": null,
+      "config": {
+
+      }
+    },
+    "backoffice2": {
+      "deploy": false,
+      "image": null,
+      "tag": null,
+      "branch": null,
+      "config": {
+
+      }
+    },
+    "backoffice3Api": {
+      "deploy": false,
+      "image": null,
+      "tag": null,
+      "branch": null,
+      "config": {
+
+      }
+    },
+    "backoffice3Portal": {
+      "deploy": false,
+      "image": null,
+      "tag": null,
+      "branch": null,
+      "config": {
+
+      }
+    },
+    "frontapi": {
+      "deploy": false,
+      "image": null,
+      "tag": null,
+      "branch": null,
+      "config": {
+
+      }
+    },
+    "xc-r2d2-frankfred": {
+      "deploy": true,
+      "image": "eu.gcr.io/deployment-pipeline/xc-r2d2-frankfred",
+      "tag": null,
+      "branch": "FF-33-login-account-dropdown",
+      "config": {
+
+      },
+      "type": "skin_xcaf"
+    }
+  },
+  "config": {
+    "coreapiDsn": "tcp://app01-coreapi-stg.bmit.local:6666",
+    "frontapiUrl": "https://staging-frontapi.cherrytech.com",
+    "backoffice3ApiUrl": "https://staging-backoffice3-api.cherrytech.com"
+  }
+}
