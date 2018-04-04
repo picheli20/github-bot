@@ -45,8 +45,8 @@ class Bot {
 
   falconDeploy(pr, skinInfo) {
     const expirationTime = 2592000;
-    const componentName = `xc-r2d2-${skinInfo.skinName}`;
-    const slug = `${pr.head.ref}-${skinInfo.skinName}`.toLocaleLowerCase();
+    const componentName = `xcaf-${skinInfo.skinName}`;
+    const slug = pr.head.ref.substr(0, 40).toLocaleLowerCase();
 
     const payload = {
       fullOwner: pr.head.user.login,
