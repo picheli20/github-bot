@@ -89,6 +89,7 @@ class Bot {
     return {
       skin: skinInfo.skinName,
       link: this.getLink(componentName, slug),
+      payload
     };
   }
 
