@@ -113,7 +113,7 @@ class Bot {
 
     let serverLinks = 'Deployment link(s):\n';
 
-    const faconDeploy = config.projects.map((skin) => Bot.falconDeploy(pr, config.projectsInfo[skin]));
+    const faconDeploy = config.projects.map((skin) => this.falconDeploy(pr, config.projectsInfo[skin]));
 
     const deployments = faconDeploy.map(item => serverLinks += `${item.skin}: ${item.link}\n`);
 
@@ -186,6 +186,9 @@ class Bot {
     let deployedUrl = {};
     this.getComments(pr.number, comments => {
       let selectedComment = comments.filter(comment => comment.body.indexOf('Deployment link(s):') !== -1 && comment.body.indexOf('Cloned PR(s):') !== -1)[0];
+      if (!selectedComment || !selectedComment.body) {
+        return;
+      }
       selectedComment.body
         .split('Deployment link(s):')[1]
         .split('Cloned PR(s):')[0]
