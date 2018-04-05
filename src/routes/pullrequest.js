@@ -65,7 +65,6 @@ router.post('/', function (req, res) {
         break;
       case 'closed':
         res.json({ status: 'Closing' });
-        Bot.doForEachClone(project => Bot.closeClone(pr, project));
         if (pr.merged_at) Bot.getIssues(pr, issues => Bot.websocket.emit('merged', { issues }));
         Bot.websocket.emit('screenshot:purge', { branch: pr.head.ref });
         break;
