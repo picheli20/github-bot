@@ -45,8 +45,8 @@ class Bot {
 
   falconDeploy(pr, skinInfo) {
     const expirationTime = 2592000;
-    const componentName = `xc-r2d2-${skinInfo.skinName}`;
-    const slug = `${pr.head.ref}-${skinInfo.skinName}`.toLocaleLowerCase();
+    const componentName = `xcaf-${skinInfo.skinName}`;
+    const slug = pr.head.ref.substr(0, 40).toLocaleLowerCase();
 
     const payload = {
       fullOwner: pr.head.user.login,
@@ -68,7 +68,11 @@ class Bot {
         coreapiDsn: 'tcp://app01-coreapi-stg.bmit.local:6666',
         frontapiUrl: 'https://staging-frontapi.cherrytech.com',
         backoffice3ApiUrl: 'https://staging-backoffice3-api.cherrytech.com',
-      }
+      },
+      enabled: true,
+      persistent: false,
+      published: false,
+      expirationTime: 7 * 24 * 60 * 60, // 1 week
     }
 
     payload.components[componentName] =
