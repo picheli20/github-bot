@@ -46,7 +46,7 @@ class Bot {
   falconDeploy(pr, skinInfo) {
     const expirationTime = 2592000;
     const componentName = `xcaf-${skinInfo.skinName}`;
-    const slug = pr.head.ref.substr(0, 40).toLocaleLowerCase();
+    const slug = `${skinInfo.skinName}-${pr.head.ref.substr(0, 40).toLocaleLowerCase()}`;
 
     const payload = {
       fullOwner: pr.head.user.login,
@@ -113,7 +113,9 @@ class Bot {
 
     let serverLinks = 'Deployment link(s):\n';
 
-    config.projects.map(skinInfo => this.falconDeploy(pr, config.projectsInfo[skinInfo])).map(item => serverLinks += `${item.skin}: ${item.link}\n`);
+    const faconDeploy = config.projects.map((skin) => Bot.falconDeploy(pr, config.projectsInfo[skin]));
+
+    const deployments = faconDeploy.map(item => serverLinks += `${item.skin}: ${item.link}\n`);
 
     const regression = `\nRegression Page: \n ${config.screenshotUrl}${pr.head.ref}`;
 
