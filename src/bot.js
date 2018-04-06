@@ -45,12 +45,19 @@ class Bot {
 
   falconDeploy(pr, skinInfo) {
     const expirationTime = 2592000;
-    const componentName = `xcaf-${skinInfo.skinName}`;
-    const slug = `${skinInfo.skinName}-${pr.head.ref.substr(0, 40).toLocaleLowerCase()}`;
+    let skin = skinInfo.skinName;
+
+    // normalize cresus name
+    if (skin === 'cresuscasino') {
+      skin = 'cresus';
+    }
+
+    const componentName = `xcaf-${skin}`;
+    const slug = `${skin}-${pr.head.ref.substr(0, 40).toLocaleLowerCase()}`;
 
     const payload = {
       fullOwner: pr.head.user.login,
-      brand: skinInfo.skinName,
+      brand: skin,
       description: 'Auto generated branch from xcaliber-bot',
       expirationTime,
       fullOwner: pr.head.user.login,
@@ -78,7 +85,7 @@ class Bot {
     payload.components[componentName] =
       this.getFalconComponent(
         true,
-        `eu.gcr.io/deployment-pipeline/xc-r2d2-${skinInfo.skinName}`,
+        `eu.gcr.io/deployment-pipeline/xc-r2d2-${skin}`,
         null,
         pr.head.ref,
         'skin_xcaf',
@@ -87,7 +94,7 @@ class Bot {
     this.websocket.emit('falcon:create',{ url: config.falconUrl, payload });
 
     return {
-      skin: skinInfo.skinName,
+      skin,
       link: this.getLink(componentName, slug),
       payload
     };
