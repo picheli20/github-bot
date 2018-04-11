@@ -32,6 +32,19 @@ class Bot {
     })
   }
 
+  getFalconComponentName(skinName) {
+    // normalize cresus name
+    if (skinName === 'cresuscasino') {
+      skinName = 'cresus';
+    }
+
+    return `xcaf-${skinName}`;
+  }
+
+  getFalconName(componentName, ref) {
+    return `${componentName}-${ref.substr(0, 40).toLocaleLowerCase()}`;
+  }
+
   getFalconComponent(deploy = false, image = null, tag = null, branch = null, type, config = {}) {
     return {
       deploy,
@@ -45,15 +58,9 @@ class Bot {
 
   falconDeploy(pr, skinInfo) {
     const expirationTime = 2592000;
-    let skin = skinInfo.skinName;
 
-    // normalize cresus name
-    if (skin === 'cresuscasino') {
-      skin = 'cresus';
-    }
-
-    const componentName = `xcaf-${skin}`;
-    const slug = `${skin}-${pr.head.ref.substr(0, 40).toLocaleLowerCase()}`;
+    const componentName = this.getFalconComponentName(skinInfo.skinName);
+    const slug = this.getFalconName(componentName, pr.head.ref);
 
     const payload = {
       fullOwner: pr.head.user.login,
@@ -91,7 +98,21 @@ class Bot {
         'skin_xcaf',
       );
 
-    this.websocket.emit('falcon:create',{ url: config.falconUrl, payload });
+    this.websocket.emit('falcon:create', { url: config.falconUrl, payload });
+
+    return {
+      skin,
+      link: this.getLink(componentName, slug),
+      payload
+    };
+  }
+
+  falconDestroy(pr, skinInfo) {
+    const componentName = this.getFalconComponentName(skinInfo.skinName);
+    const slug = this.getFalconName(componentName, pr.head.ref);
+    const payload = { slug };
+
+    this.websocket.emit('falcon:destroy', { url: config.falconUrl, payload });
 
     return {
       skin,
