@@ -63,12 +63,13 @@ class Bot {
   falconDeploy(pr, skinInfo) {
     const expirationTime = 2592000;
 
+    const skin = this.normalizeSkinName(skinInfo.skinName);
     const componentName = this.getFalconComponentName(skinInfo.skinName);
     const slug = this.getFalconName(componentName, pr.head.ref);
 
     const payload = {
       fullOwner: pr.head.user.login,
-      brand: this.normalizeSkinName(skinInfo.skinName),
+      brand: skin,
       description: 'Auto generated branch from xcaliber-bot',
       expirationTime,
       fullOwner: pr.head.user.login,
