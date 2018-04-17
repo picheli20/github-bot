@@ -32,13 +32,17 @@ class Bot {
     })
   }
 
-  getFalconComponentName(skinName) {
+  normalizeSkinName(skinName) {
     // normalize cresus name
     if (skinName === 'cresuscasino') {
       skinName = 'cresus';
     }
 
-    return `xcaf-${skinName}`;
+    return skinName;
+  }
+
+  getFalconComponentName(skinName) {
+    return `xcaf-${this.normalizeSkinName(skinName)}`;
   }
 
   getFalconName(componentName, ref) {
@@ -64,7 +68,7 @@ class Bot {
 
     const payload = {
       fullOwner: pr.head.user.login,
-      brand: skin,
+      brand: this.normalizeSkinName(skinInfo.skinName),
       description: 'Auto generated branch from xcaliber-bot',
       expirationTime,
       fullOwner: pr.head.user.login,
