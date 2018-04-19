@@ -44,7 +44,6 @@ class Bot {
   }
 
   falconDeploy(pr, skinInfo) {
-    const expirationTime = 2592000;
     let skin = skinInfo.skinName;
 
     // normalize cresus name
@@ -59,7 +58,8 @@ class Bot {
       fullOwner: pr.head.user.login,
       brand: skin,
       description: 'Auto generated branch from xcaliber-bot',
-      expirationTime,
+      expirationTime: null,
+      persistent: true,
       fullOwner: pr.head.user.login,
       owner: pr.head.user.login,
       fullName: pr.head.ref,
