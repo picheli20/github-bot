@@ -61,8 +61,6 @@ class Bot {
   }
 
   falconDeploy(pr, skinInfo) {
-    let skin = skinInfo.skinName;
-
     const skin = this.normalizeSkinName(skinInfo.skinName);
     const componentName = this.getFalconComponentName(skinInfo.skinName);
     const slug = this.getFalconName(componentName, pr.head.ref);
@@ -72,7 +70,6 @@ class Bot {
       brand: skin,
       description: 'Auto generated branch from xcaliber-bot',
       expirationTime: null,
-      persistent: true,
       fullOwner: pr.head.user.login,
       owner: pr.head.user.login,
       fullName: pr.head.ref,
@@ -90,9 +87,8 @@ class Bot {
         backoffice3ApiUrl: 'https://staging-backoffice3-api.cherrytech.com',
       },
       enabled: true,
-      persistent: false,
-      published: false,
-      expirationTime: 7 * 24 * 60 * 60, // 1 week
+      persistent: true,
+      published: false
     }
 
     payload.components[componentName] =
@@ -114,6 +110,7 @@ class Bot {
   }
 
   falconDestroy(pr, skinInfo) {
+    const skin = skinInfo.skinName;
     const componentName = this.getFalconComponentName(skinInfo.skinName);
     const slug = this.getFalconName(componentName, pr.head.ref);
     const payload = { slug };
