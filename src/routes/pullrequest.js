@@ -67,6 +67,8 @@ router.post('/', function (req, res) {
         res.json({ status: 'Closing' });
         if (pr.merged_at) Bot.getIssues(pr, issues => Bot.websocket.emit('merged', { issues }));
         Bot.websocket.emit('screenshot:purge', { branch: pr.head.ref });
+        // Loop through each skin and tell Falcon to destroy the environment
+        config.projects.forEach((skin) => Bot.falconDestroy(pr, config.projectsInfo[skin]));
         break;
       default:
         res.json({ status: 'Default, no action' });
@@ -90,6 +92,8 @@ router.get('/close/:id', function (req, res) {
   Bot.getPullRequest(req.params.id, pr => {
     res.json({ status: 'Doing initial setup on ' + pr.title });
     Bot.closeClone(pr, 'CRES');
+    // Loop through each skin and tell Falcon to destroy the environment
+    config.projects.forEach((skin) => Bot.falconDestroy(pr, config.projectsInfo[skin]));
   });
 });
 
