@@ -67,7 +67,7 @@ class Bot {
 
     const payload = {
       fullOwner: pr.head.user.login,
-      brand: skin,
+      brand: skinInfo.skinName,
       description: 'Auto generated branch from xcaliber-bot',
       expirationTime: null,
       fullOwner: pr.head.user.login,
