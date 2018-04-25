@@ -42,7 +42,18 @@ class Bot {
   }
 
   getFalconComponentName(skinName) {
-    return `xcaf-${this.normalizeSkinName(skinName)}`;
+    switch(skinName) {
+      case 'cresuscasino':
+        return 'cr-xcaf';
+      case 'eurolotto':
+        return 'el-xcaf';
+      case 'frankfred':
+        return 'ff-xcaf';
+      case 'vegascasino':
+        return 'vc-xcaf';
+      case 'sunmaker':
+        return 'sm-xcaf';
+    }
   }
 
   getFalconName(componentName, ref) {
@@ -69,10 +80,10 @@ class Bot {
       fullOwner: pr.head.user.login,
       brand: skinInfo.skinName,
       description: 'Auto generated branch from xcaliber-bot',
-      expirationTime: null,
+      expirationTime: 604800, // 07 days
       fullOwner: pr.head.user.login,
       owner: pr.head.user.login,
-      fullName: pr.head.ref,
+      fullName: skin,
       slug,
       components: {
         coreapi: this.getFalconComponent(),
@@ -87,7 +98,7 @@ class Bot {
         backoffice3ApiUrl: 'https://staging-backoffice3-api.cherrytech.com',
       },
       enabled: true,
-      persistent: true,
+      persistent: false,
       published: false
     }
 
