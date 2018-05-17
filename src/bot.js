@@ -57,7 +57,7 @@ class Bot {
   }
 
   getFalconName(componentName, ref) {
-    return `${componentName}-${ref.substr(0, 40).toLocaleLowerCase()}`;
+    return `${componentName}-${ref.toLocaleLowerCase()}`;
   }
 
   getFalconComponent(deploy = false, image = null, tag = null, branch = null, type, config = {}) {
@@ -79,11 +79,11 @@ class Bot {
     const payload = {
       fullOwner: pr.head.user.login,
       brand: skinInfo.skinName,
-      description: 'Auto generated branch from xcaliber-bot',
+      description: `[xcaliber-bot] Auto generated from ${pr.head.ref}`,
       expirationTime: 604800, // 07 days
       fullOwner: pr.head.user.login,
       owner: pr.head.user.login,
-      fullName: skin,
+      fullName: slug,
       slug,
       components: {
         coreapi: this.getFalconComponent(),
