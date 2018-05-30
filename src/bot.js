@@ -56,8 +56,23 @@ class Bot {
     }
   }
 
-  getFalconName(componentName, ref) {
-    return `${componentName}-${ref.toLocaleLowerCase()}`;
+  shortSkingForm(skinName) {
+    switch(skinName) {
+      case 'cresuscasino':
+        return 'cr';
+      case 'eurolotto':
+        return 'el';
+      case 'frankfred':
+        return 'ff';
+      case 'vegascasino':
+        return 'vc';
+      case 'sunmaker':
+        return 'sm';
+    }
+  }
+
+  getFalconName(skin, ref) {
+    return `${skin}-${ref.toLocaleLowerCase()}`;
   }
 
   getFalconComponent(deploy = false, image = null, tag = null, branch = null, type, config = {}) {
@@ -74,7 +89,7 @@ class Bot {
   falconDeploy(pr, skinInfo) {
     const skin = this.normalizeSkinName(skinInfo.skinName);
     const componentName = this.getFalconComponentName(skinInfo.skinName);
-    const slug = this.getFalconName(componentName, pr.head.ref);
+    const slug = this.getFalconName(this.shortSkingForm(skinInfo.skinName), pr.head.ref);
 
     const payload = {
       fullOwner: pr.head.user.login,
@@ -123,7 +138,7 @@ class Bot {
   falconDestroy(pr, skinInfo) {
     const skin = skinInfo.skinName;
     const componentName = this.getFalconComponentName(skinInfo.skinName);
-    const slug = this.getFalconName(componentName, pr.head.ref);
+    const slug = this.getFalconName(this.shortSkingForm(skinInfo.skinName), pr.head.ref);
     const payload = { slug };
 
     this.websocket.emit('falcon:destroy', { url: config.falconUrl, payload });
