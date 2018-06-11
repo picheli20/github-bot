@@ -34,10 +34,12 @@ class Bot {
 
   normalizeSkinName(skinName) {
     // normalize cresus name
-    if (skinName === 'cresuscasino') {
-      skinName = 'cresus';
+    switch(skinName) {
+      case 'cresuscasino':
+        skinName = 'cresus';
+      case 'sunmakercasino':
+        skinName = 'sunmaker';
     }
-
     return skinName;
   }
 
@@ -51,8 +53,8 @@ class Bot {
         return 'ff-xcaf';
       case 'vegascasino':
         return 'vc-xcaf';
-      case 'sunmaker':
-        return 'sm-xcaf';
+      case 'sunmakercasino':
+        return 'smc-xcaf';
     }
   }
 
@@ -66,8 +68,8 @@ class Bot {
         return 'ff';
       case 'vegascasino':
         return 'vc';
-      case 'sunmaker':
-        return 'sm';
+      case 'sunmakercasino':
+        return 'smc';
     }
   }
 
@@ -120,7 +122,7 @@ class Bot {
     payload.components[componentName] =
       this.getFalconComponent(
         true,
-        `eu.gcr.io/deployment-pipeline/xc-r2d2-${skin}`,
+        `registry.k8s.xcaliber.io/platform/xcaf/${skin}`,
         null,
         pr.head.ref,
         'skin_xcaf',
