@@ -86,6 +86,10 @@ class Bot {
     };
   }
 
+  brachToImageTag(b) {
+    return b.toLowerCase().split('/').slice(-1)[0].replace(/[^A-Za-z0-9_.-]+/g, '-').replace(/-{2,}/g, '-');
+  }
+
   falconDeploy(pr, skinInfo) {
     const skin = this.normalizeSkinName(skinInfo.skinName);
     const componentName = this.getFalconComponentName(skinInfo.skinName);
@@ -122,7 +126,7 @@ class Bot {
         true,
         `eu.gcr.io/deployment-pipeline/xc-r2d2-${skin}`,
         null,
-        pr.head.ref,
+        brachToImageTag(pr.head.ref),
         'skin_xcaf',
       );
 
