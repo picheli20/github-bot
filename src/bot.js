@@ -36,11 +36,10 @@ class Bot {
     // normalize cresus name
     switch(skinName) {
       case 'cresuscasino':
-        skinName = 'cresus';
+        return 'cresus';
       case 'sunmakercasino':
-        skinName = 'sunmaker';
+        return 'sunmaker';
     }
-    return skinName;
   }
 
   getFalconComponentName(skinName) {
