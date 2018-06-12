@@ -475,6 +475,7 @@ class Bot {
     this.github.pullRequests.getAll({
         owner: config.github.repoOwner,
         repo: config.github.repo,
+        per_page: 10000,
       }, this.genericAction('getPullRequests: Error while fetching PRs ', callback));
   }
 

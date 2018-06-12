@@ -84,6 +84,26 @@ router.get('/all', function (req, res) {
   });
 });
 
+router.post('/comment', function (req, res) {
+  const message = req.body.message;
+  const id = req.body.id;
+
+  if (isNaN(id)) {
+
+    Bot.getPullRequests(prs => {
+      const pr = prs.filter(pr => pr.head.ref === id);
+
+      if (pr.length > 0) {
+        Bot.postComment(pr[0].number, `${message}`, () => res.json({ success: true }));
+      } else {
+        res.json({ success: false, message: 'Branch not found' });
+      }
+    });
+  } else {
+    Bot.postComment(id, `${message}`, () => res.json({ success: true }));
+  }
+});
+
 router.get('/log', function (req, res) {
   res.json(log);
 });
