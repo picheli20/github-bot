@@ -39,6 +39,8 @@ class Bot {
         return 'cresus';
       case 'sunmakercasino':
         return 'sunmaker';
+      default:
+        return skinName;
     }
   }
 
@@ -127,7 +129,7 @@ class Bot {
         true,
         `registry.k8s.xcaliber.io/platform/xcaf/${skin}`,
         null,
-        brachToImageTag(pr.head.ref),
+        this.brachToImageTag(pr.head.ref),
         'skin_xcaf',
       );
 
