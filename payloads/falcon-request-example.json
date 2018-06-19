@@ -54,7 +54,7 @@
     },
     "xc-r2d2-frankfred": {
       "deploy": true,
-      "image": "eu.gcr.io/deployment-pipeline/xc-r2d2-frankfred",
+      "image": "registry.k8s.xcaliber.io/platform/xcaf/frankfred",
       "tag": null,
       "branch": "FF-33-login-account-dropdown",
       "config": {
