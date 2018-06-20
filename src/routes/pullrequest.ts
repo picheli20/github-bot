@@ -48,7 +48,7 @@ router.post('/', function (req, res) {
       config.projects.forEach((project: IProject) =>
         bot.websocket.emit(
           'falcon:destroy',
-          falcon.destroy(pr, config.projectsInfo[project.skinName]),
+          falcon.destroy(pr, project),
         ),
       );
       break;
@@ -71,7 +71,7 @@ router.post('/comment', function (req, res) {
   const id = req.body.id;
 
   if (isNaN(id)) {
-    git.getPullRequest(req.params.id, (prs: any) => {
+    git.getPullRequests((prs: any) => {
       let prArr = prs.filter((pr: any) => pr.head.ref === id);
 
       if (prArr.length > 0) {
