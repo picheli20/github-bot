@@ -42,7 +42,7 @@ router.post('/', function (req, res) {
     case 'closed':
       res.json({ status: 'Closing' });
 
-      if (pr.isMerged()) git.getIssues(pr, (issues: any) => bot.websocket.emit('merged', { issues }));
+      if (pr.isMerged()) git.getIssues(pr, (issues: string[]) => bot.websocket.emit('merged', { issues }));
       bot.websocket.emit('screenshot:purge', { branch: pr.branch });
       // Loop through each skin and tell Falcon to destroy the environment
       config.projects.forEach((project: IProject) =>

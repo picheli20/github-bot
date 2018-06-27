@@ -5,17 +5,24 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "./node_modules/.bin/ts-node -- ./src/server.ts",
-    "serve": "nodemon --exec ./node_modules/.bin/ts-node -- ./src/server.ts"
+    "ts": "./node_modules/.bin/ts-node",
+    "start": "npm run ts -- ./src/server.ts",
+    "start:internal": "npm run ts -- ./internal/index.ts",
+    "serve": "nodemon --exec npm run ts -- ./src/server.ts",
+    "serve:internal": "nodemon --exec npm run ts -- ./internal/index.ts"
   },
   "author": "XCaliber",
   "license": "MIT",
   "dependencies": {
+    "@types/atob": "^2.1.0",
+    "atob": "^2.1.1",
     "axios": "^0.18.0",
     "body-parser": "^1.18.2",
     "express": "^4.16.2",
     "github": "^13.0.1",
-    "socket.io": "^2.0.4"
+    "jira-client": "^6.4.1",
+    "socket.io": "^2.0.4",
+    "socket.io-client": "^2.1.1"
   },
   "engines": {
     "node": "^8.0.0",
@@ -27,6 +34,7 @@
     "@types/github": "^7.1.0",
     "@types/node": "^10.1.2",
     "@types/socket.io": "^1.4.33",
+    "@types/socket.io-client": "^1.4.32",
     "errorhandler": "^1.5.0",
     "nodemon": "^1.17.5",
     "ts-node": "^6.0.3",
