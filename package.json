@@ -37,6 +37,7 @@
     "@types/socket.io-client": "^1.4.32",
     "errorhandler": "^1.5.0",
     "nodemon": "^1.17.5",
+    "request": "^2.87.0",
     "ts-node": "^6.0.3",
     "typescript": "^2.8.3"
   }
