@@ -15,7 +15,7 @@ router.get('/', (req, res) => {
   res.json({ status: 'I should be a PR' });
 });
 
-router.post('/', function (req, res) {
+router.post('/', (req, res) => {
 
   if (!req.body || !req.body.pull_request) {
     res.json({ error: 'POST Request received, but no body!' });
@@ -58,7 +58,7 @@ router.post('/', function (req, res) {
   }
 });
 
-router.get('/:id', function (req, res) {
+router.get('/:id', (req, res) => {
   git.getPullRequest(req.params.id, (json: any) => {
     const pr = new Pullrequest(json);
     res.json({ status: 'Doing initial setup on ' + pr.title });
@@ -66,7 +66,11 @@ router.get('/:id', function (req, res) {
   });
 });
 
-router.post('/comment', function (req, res) {
+router.get('/log', (req, res) => {
+  res.json({ log });
+});
+
+router.post('/comment', (req, res) => {
   const message = req.body.message;
   const id = req.body.id;
 
