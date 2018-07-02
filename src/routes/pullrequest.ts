@@ -58,14 +58,6 @@ router.post('/', (req, res) => {
   }
 });
 
-router.get('/:id', (req, res) => {
-  git.getPullRequest(req.params.id, (json: any) => {
-    const pr = new Pullrequest(json);
-    res.json({ status: 'Doing initial setup on ' + pr.title });
-    bot.initialSetup(pr);
-  });
-});
-
 router.get('/log', (req, res) => {
   res.json({ log });
 });
@@ -88,6 +80,14 @@ router.post('/comment', (req, res) => {
   } else {
     git.postComment(id, `${message}`, () => res.json({ success: true }));
   }
+});
+
+router.get('/:id', (req, res) => {
+  git.getPullRequest(req.params.id, (json: any) => {
+    const pr = new Pullrequest(json);
+    res.json({ status: 'Doing initial setup on ' + pr.title });
+    bot.initialSetup(pr);
+  });
 });
 
 export default router;
