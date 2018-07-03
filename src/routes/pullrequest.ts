@@ -17,29 +17,32 @@ router.get('/', (req, res) => {
 
 router.post('/', (req, res) => {
 
-  if (!req.body || !req.body.pull_request) {
+  if (!req.body || !req.body.action) {
     res.json({ error: 'POST Request received, but no body!' });
     return console.error('POST Request received, but no body!');
   }
 
-  const pr = new Pullrequest(req.body);
-
-  log.unshift(req.body.pull_request);
+  log.unshift(req.body);
 
   if(log.length > 50) {
     log.pop();
   }
 
+  let pr: Pullrequest;
+
   switch (req.body.action) {
     case 'opened':
+      pr = new Pullrequest(req.body);
       res.json({ status: 'Checking openned' });
       bot.initialSetup(pr);
       break;
     case 'submitted':
+      pr = new Pullrequest(req.body);
       res.json({ status: 'Checking review' });
       git.checkReviews(pr);
       break;
     case 'closed':
+      pr = new Pullrequest(req.body);
       res.json({ status: 'Closing' });
 
       if (pr.isMerged()) git.getIssues(pr, (issues: string[]) => bot.websocket.emit('merged', { issues }));
@@ -62,6 +65,13 @@ router.get('/log', (req, res) => {
   res.json({ log });
 });
 
+router.get('/info/:id', (req, res) => {
+  git.getPullRequest(req.params.id, (json: any) => {
+    const pr = new Pullrequest(json);
+    res.json({ json, test: pr.login });
+  });
+});
+
 router.post('/comment', (req, res) => {
   const message = req.body.message;
   const id = req.body.id;
@@ -80,6 +90,24 @@ router.post('/comment', (req, res) => {
   } else {
     git.postComment(id, `${message}`, () => res.json({ success: true }));
   }
+});
+
+router.get('/deploy/:id', (req, res) => {
+  git.getPullRequest(req.params.id, (json: any) => {
+    const pr = new Pullrequest(json);
+    const deployments = bot.deployAll(pr);
+    let comment = 'Deployment link(s):\n';
+
+    deployments.map((item: any) => comment += `${item.skin}: ${item.link}\n`);
+
+    git.postComment(pr.number, `${comment}`);
+
+    res.json({
+      status: `Deploying`,
+      branches: config.projects,
+      deployments
+    });
+  });
 });
 
 router.get('/:id', (req, res) => {
