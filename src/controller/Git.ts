@@ -175,20 +175,28 @@ class Git {
     }, this.genericAction('issues.edit: Error while closing a cloned pull request', callback));
   }
 
-  addLabels (pr: Pullrequest, labels: string[], callback?: Function) {
+  addLabels (pr: Pullrequest | number, labels: string[], callback?: Function) {
+    if (typeof pr !== 'number') {
+      pr = pr.number;
+    }
+
     this.github.issues.addLabels({
       owner: config.github.repoOwner,
       repo: config.github.repo,
-      number: pr.number,
+      number: pr,
       labels
     }, this.genericAction('addLabels: Error while trying add labels', callback));
   }
 
-  removeLabel (pr: Pullrequest, label: string, callback?: Function) {
+  removeLabel(pr: Pullrequest | number, label: string, callback?: Function) {
+    if (typeof pr !== 'number') {
+      pr = pr.number;
+    }
+
     this.github.issues.removeLabel({
       owner: config.github.repoOwner,
       repo: config.github.repo,
-      number: pr.number,
+      number: pr,
       name: label
     }, this.genericAction('removeLabel: Error while trying remove labels', callback));
   }
@@ -227,11 +235,15 @@ class Git {
     }, this.genericAction('getCommits: Error while trying to get commits', callback));
   }
 
-  getLabels(pr: Pullrequest, callback?: Function) {
+  getLabels(pr: Pullrequest | number, callback?: Function) {
+    if (typeof pr !== 'number') {
+      pr = pr.number;
+    }
+
     this.github.issues.getIssueLabels({
       owner: config.github.repoOwner,
       repo: config.github.repo,
-      number: pr.number
+      number: pr,
     }, this.genericAction('getIssueLabels: Error while trying get labels', callback));
   }
 

@@ -34,6 +34,7 @@ router.post('/', (req, res) => {
     case 'opened':
       pr = new Pullrequest(req.body);
       res.json({ status: 'Checking openned' });
+      git.addLabels(pr, [config.status.pending.tag]);
       bot.initialSetup(pr);
       break;
     case 'submitted':
@@ -46,6 +47,7 @@ router.post('/', (req, res) => {
       res.json({ status: 'Closing' });
 
       if (pr.isMerged()) git.getIssues(pr, (issues: string[]) => bot.websocket.emit('merged', { issues }));
+
       bot.websocket.emit('screenshot:purge', { branch: pr.branch });
       // Loop through each skin and tell Falcon to destroy the environment
       config.projects.forEach((project: IProject) =>
@@ -54,6 +56,23 @@ router.post('/', (req, res) => {
           falcon.destroy(pr, project),
         ),
       );
+      break;
+    // new comment
+    case 'created':
+      res.json({ status: 'Checking comment' });
+      const comment = req.body.comment;
+
+      if (!comment || comment.user.login !== config.github.user || comment.body.startsWith('Deployment')) {
+        return;
+      }
+      const prNumber = req.body.issue ? req.body.issue.number : req.body.pull_request.number;
+
+      falcon.resetAndAddTags(prNumber, config.status[comment.body.startsWith(':white_check_mark:') ? 'success' : 'fail'].tag);
+      break;
+    // new commit pushed
+    case 'synchronize':
+    res.json({ status: 'Synchronizing' });
+      falcon.resetAndAddTags(req.body.number, config.status.pending.tag);
       break;
     default:
       res.json({ status: 'Default, no action' });

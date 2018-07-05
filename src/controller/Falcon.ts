@@ -1,7 +1,7 @@
 import { IProject } from '../interfaces/projects';
 import { Pullrequest } from './Pullrequest';
 import { config } from '../config';
-
+import { git } from './Git';
 class Falcon {
 
   normalizeSkinName(skinName: string) {
@@ -129,6 +129,29 @@ class Falcon {
 
   getLink(componentName: string, slug: string) {
     return `http://${componentName}-${slug}.kbox.k8s.xcaliber.io`;
+  }
+
+  // TODO: mark properly the commit as success/fail like CircleCI does (needs to create a app for that)
+  resetAndAddTags(prNumber: number, toBeAdded: string) {
+    git.getLabels(prNumber, (data: any[]) => {
+      const pending = config.status.pending.tag;
+      const success = config.status.success.tag;
+      const fail = config.status.fail.tag;
+      data.map(item => {
+        if (item.name === success && toBeAdded !== success) {
+          git.removeLabel(prNumber, success);
+        }
+
+        if (item.name === fail && toBeAdded !== fail) {
+          git.removeLabel(prNumber, fail);
+        }
+
+        if (item.name === pending && toBeAdded !== pending) {
+          git.removeLabel(prNumber, pending);
+        }
+      });
+      git.addLabels(prNumber, [toBeAdded]);
+    });
   }
 }
 
