@@ -12,7 +12,7 @@ interface IConfig {
 }
 
 export const config: IConfig = {
-  screenshotUrl: 'http://18.185.247.217',
+  screenshotUrl: 'http://api.xc-regression.aasanchez.host/',
   jira: {
     auth: pe.JIRA_AUTH || '',
     server: pe.JIRA_SERVER || '',
