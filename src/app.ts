@@ -1,7 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 
-import index from './routes/index';
+import index from './routes';
 
 const port = process.env.PORT || '3000';
 const app = express();
