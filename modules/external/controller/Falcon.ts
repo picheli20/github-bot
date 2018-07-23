@@ -1,7 +1,6 @@
 import { IProject } from '../interfaces/project';
 import { Pullrequest } from './Pullrequest';
 import { config } from '../config';
-import { git } from './Git';
 
 
 class Falcon {
@@ -90,19 +89,19 @@ class Falcon {
       },
       enabled: true,
       persistent: false,
-      published: false
+      published: false,
     };
 
     return {
       url: config.falcon.url,
       skin,
       link: this.getLink(componentName, slug),
-      payload
+      payload,
     };
   }
 
-  destroy(pr: Pullrequest, skinInfo: IProject) {
-    const componentName = this.getFalconComponentName(skinInfo.skinName);
+  destroy(pr: Pullrequest, project: IProject) {
+    const componentName = this.getFalconComponentName(project.skinName);
 
     return {
       url: config.falcon.url,
@@ -114,29 +113,6 @@ class Falcon {
 
   getLink(componentName: string, slug: string) {
     return `http://${componentName}-${slug}.kbox.k8s.xcaliber.io`;
-  }
-
-  // TODO: mark properly the commit as success/fail like CircleCI does (needs to create a app for that)
-  resetAndAddTags(prNumber: number, toBeAdded: string) {
-    git.getLabels(prNumber, (data: any[]) => {
-      const pending = config.status.pending.tag;
-      const success = config.status.success.tag;
-      const fail = config.status.fail.tag;
-      data.map(item => {
-        if (item.name === success && toBeAdded !== success) {
-          git.removeLabel(prNumber, success);
-        }
-
-        if (item.name === fail && toBeAdded !== fail) {
-          git.removeLabel(prNumber, fail);
-        }
-
-        if (item.name === pending && toBeAdded !== pending) {
-          git.removeLabel(prNumber, pending);
-        }
-      });
-      git.addLabels(prNumber, [toBeAdded]);
-    });
   }
 }
 

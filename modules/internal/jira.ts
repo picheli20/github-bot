@@ -4,7 +4,7 @@ import { time } from './utils';
 import { STATUS } from './config/status';
 
 // https://github.com/jira-node/node-jira-client/pull/194
-const JiraApi =  require('jira-client');
+const JiraApi = require('jira-client');
 
 const [username, password] = atob(config.jira.auth).split(':')
 

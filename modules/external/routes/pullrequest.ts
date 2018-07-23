@@ -3,9 +3,8 @@ import { Router } from 'express';
 import { config } from '../config'
 import { git } from '../controller/Git';
 import { bot } from '../controller/Bot';
-import { falcon } from '../controller/Falcon';
 import { Pullrequest } from '../controller/Pullrequest';
-import { IProject } from '../interfaces/project';
+
 
 const router = Router();
 
@@ -46,18 +45,13 @@ router.post('/', (req, res) => {
       pr = new Pullrequest(req.body);
       res.json({ status: 'Closing' });
 
-      if (pr.isMerged()) git.getIssues(pr, (issues: string[]) => bot.websocket.emit('merged', { issues }));
+      if (pr.isMerged()) {
+        git.getIssues(pr, (issues: string[]) => bot.handleMerged(issues));
+      }
 
-      bot.websocket.emit('screenshot:purge', { branch: pr.branch });
-      // Loop through each skin and tell Falcon to destroy the environment
-      config.projects
-        .filter(project => project.deploy)
-        .forEach(project =>
-          bot.websocket.emit(
-            'falcon:destroy',
-            falcon.destroy(pr, project),
-          ),
-        );
+      bot.purgeScreenshots(pr.branch);
+      bot.destroyAll(pr);
+
       break;
     // new comment
     case 'created':
@@ -69,12 +63,12 @@ router.post('/', (req, res) => {
       }
       const prNumber = req.body.issue ? req.body.issue.number : req.body.pull_request.number;
 
-      falcon.resetAndAddTags(prNumber, config.status[comment.body.startsWith(':white_check_mark:') ? 'success' : 'fail'].tag);
+      bot.resetAndAddTags(prNumber, config.status[comment.body.startsWith(':white_check_mark:') ? 'success' : 'fail'].tag);
       break;
     // new commit pushed
     case 'synchronize':
       res.json({ status: 'Synchronizing' });
-      falcon.resetAndAddTags(req.body.number, config.status.pending.tag);
+      bot.resetAndAddTags(req.body.number, config.status.pending.tag);
       break;
     default:
       res.json({ status: 'Default, no action' });

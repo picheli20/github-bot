@@ -2,10 +2,9 @@ import { Pullrequest } from "./Pullrequest";
 import { git } from "./Git";
 import { config } from "../config";
 import { falcon } from "./Falcon";
-import { IProject } from "../interfaces/project";
 
 class Bot {
-  websocket: any;
+  private websocket: any;
 
   // TODO: improve the comment flow
   initialSetup(pr: Pullrequest) {
@@ -23,13 +22,10 @@ class Bot {
 
     let serverLinks = 'Deployment link(s):\n';
 
-    const faconDeploy = this.deployAll(pr);
-    const deployments = faconDeploy.map((item: any) => serverLinks += `${item.skin}: ${item.link}\n`);
-    let regression = '';
+    const falconDeploy = this.deployAll(pr);
+    falconDeploy.forEach((item: any) => serverLinks += `${item.skin}: ${item.link}\n`);
 
-    if (config.screenshot) {
-      regression = `\nRegression Page: \n ${config.screenshot.url}${pr.branch}`;
-    }
+    const regression = config.screenshot ? `\nRegression Page: \n ${config.screenshot.url}${pr.branch}` : '';
 
     let commentLinks = '';
     if (config.github.instructionsComment !== '') {
@@ -57,7 +53,8 @@ class Bot {
       const comment = `${serverLinks}\n${commentLinks}\n${regression}`
 
       git.postComment(pr.number, `${comment}`);
-      this.websocket.emit('initialsetup',{
+
+      this.websocket.emit('initialsetup', {
         issues,
         pr,
         deployedUrl,
@@ -74,6 +71,49 @@ class Bot {
         this.websocket.emit('falcon:create', { url: resp.url, payload: resp.payload });
         return resp;
       });
+  }
+
+  destroyAll(pr: Pullrequest) {
+    return config.projects
+      .filter(project => project.deploy)
+      .map(project => {
+        const resp = falcon.destroy(pr, project);
+        bot.websocket.emit('falcon:destroy', resp);
+        return resp;
+      });
+  }
+
+  purgeScreenshots(branch: string) {
+    bot.websocket.emit('screenshot:purge', { branch });
+  }
+
+  // TODO: mark properly the commit as success/fail like CircleCI does (needs to create a app for that)
+  resetAndAddTags(prNumber: number, toBeAdded: string) {
+    git.getLabels(prNumber, (data: any[]) => {
+      const pending = config.status.pending.tag;
+      const success = config.status.success.tag;
+      const fail = config.status.fail.tag;
+
+      data.forEach(item => {
+        if (item.name === success && toBeAdded !== success) {
+          git.removeLabel(prNumber, success);
+        }
+
+        if (item.name === fail && toBeAdded !== fail) {
+          git.removeLabel(prNumber, fail);
+        }
+
+        if (item.name === pending && toBeAdded !== pending) {
+          git.removeLabel(prNumber, pending);
+        }
+      });
+
+      git.addLabels(prNumber, [toBeAdded]);
+    });
+  }
+
+  handleMerged(issues: string[]) {
+    bot.websocket.emit('merged', { issues });
   }
 
   setWebsocket(io: SocketIO.Server) {
