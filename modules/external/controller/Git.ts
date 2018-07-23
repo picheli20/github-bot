@@ -33,13 +33,13 @@ class Git {
       if (!selectedComment || !selectedComment.body) {
         return;
       }
+
       selectedComment.body
         .split('Deployment link(s):')[1]
         .split('Cloned PR(s):')[0]
         .split('\n')
         .filter((item: string) => item.split(': ').length === 2)
         .map((item: string) => deployedUrl[item.split(': ')[0]] = item.split(': ')[1]);
-
 
       if (callback) {
         callback(deployedUrl);

@@ -6,10 +6,12 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "ts": "./node_modules/.bin/ts-node",
-    "start": "npm run ts -- ./src/server.ts",
-    "start:internal": "npm run ts -- ./internal/index.ts",
-    "serve": "nodemon --exec npm run ts -- ./src/server.ts",
-    "serve:internal": "nodemon --exec npm run ts -- ./internal/index.ts"
+    "start": "npm run start:external",
+    "serve": "npm run serve:external",
+    "start:external": "npm run ts -- ./modules/external",
+    "start:internal": "npm run ts -- ./modules/internal",
+    "serve:external": "nodemon --exec npm run ts -- ./modules/external",
+    "serve:internal": "nodemon --exec npm run ts -- ./modules/internal"
   },
   "author": "XCaliber",
   "license": "MIT",
