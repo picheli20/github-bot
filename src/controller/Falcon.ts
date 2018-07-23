@@ -1,7 +1,9 @@
-import { IProject } from '../interfaces/projects';
+import { IProject } from '../interfaces/project';
 import { Pullrequest } from './Pullrequest';
 import { config } from '../config';
 import { git } from './Git';
+
+
 class Falcon {
 
   normalizeSkinName(skinName: string) {
@@ -16,7 +18,7 @@ class Falcon {
     }
   }
 
-  brachToImageTag(b: string) {
+  branchToImageTag(b: string) {
     return b.toLowerCase().split('/').slice(-1)[0].replace(/[^A-Za-z0-9_.-]+/g, '-').replace(/-{2,}/g, '-');
   }
 
@@ -37,7 +39,7 @@ class Falcon {
     }
   }
 
-  shortSkingForm(skinName: string) {
+  shortSkinForm(skinName: string) {
     switch(skinName) {
       case 'cresuscasino':
         return 'cr';
@@ -58,36 +60,28 @@ class Falcon {
     return `${componentName}-${ref.toLocaleLowerCase()}`;
   }
 
-  getFalconComponent(deploy = false, image: string | null = null, tag = null, branch: string = '', type: any = null, config = {}) {
-    return {
-      deploy,
-      image,
-      tag,
-      branch,
-      config,
-      type
-    };
-  }
-
-  deploy(pr: Pullrequest, skinInfo: IProject) {
-    const skin = this.normalizeSkinName(skinInfo.skinName);
-    const componentName = this.getFalconComponentName(skinInfo.skinName);
-    const slug = this.getFalconName(this.shortSkingForm(skinInfo.skinName), pr.branch);
+  deploy(pr: Pullrequest, project: IProject) {
+    const skin = this.normalizeSkinName(project.skinName);
+    const componentName = this.getFalconComponentName(project.skinName);
+    const slug = this.getFalconName(this.shortSkinForm(project.skinName), pr.branch);
 
     const payload: any = {
       fullOwner: pr.login,
-      brand: skinInfo.skinName,
+      brand: project.skinName,
       description: `[xcaliber-bot] Auto generated from ${pr.branch}`,
       expirationTime: 604800, // 07 days
       owner: pr.login,
       fullName: slug,
       slug,
       components: {
-        coreapi: this.getFalconComponent(),
-        backoffice2: this.getFalconComponent(),
-        backoffice3Api: this.getFalconComponent(),
-        backoffice3Portal: this.getFalconComponent(),
-        frontapi: this.getFalconComponent(),
+        [componentName]: {
+          deploy: true,
+          image: `registry.k8s.xcaliber.io/platform/xcaf/${skin}`,
+          tag: null,
+          branch: this.branchToImageTag(pr.branch),
+          config: {},
+          type: 'skin_xcaf',
+        },
       },
       config: {
         coreapiDsn: 'tcp://app01-coreapi-stg.bmit.local:6666',
@@ -97,16 +91,7 @@ class Falcon {
       enabled: true,
       persistent: false,
       published: false
-    }
-
-    payload.components[componentName] =
-      this.getFalconComponent(
-        true,
-        `registry.k8s.xcaliber.io/platform/xcaf/${skin}`,
-        null,
-        this.brachToImageTag(pr.branch),
-        'skin_xcaf',
-      );
+    };
 
     return {
       url: config.falcon.url,

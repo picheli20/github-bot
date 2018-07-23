@@ -2,7 +2,7 @@ import { Pullrequest } from "./Pullrequest";
 import { git } from "./Git";
 import { config } from "../config";
 import { falcon } from "./Falcon";
-import { IProject } from "../interfaces/projects";
+import { IProject } from "../interfaces/project";
 
 class Bot {
   websocket: any;
@@ -67,11 +67,13 @@ class Bot {
   }
 
   deployAll(pr: Pullrequest) {
-    return config.projects.map((project: IProject) => {
-      const resp = falcon.deploy(pr, project);
-      this.websocket.emit('falcon:create', { url: resp.url, payload: resp.payload });
-      return resp;
-    });
+    return config.projects
+      .filter(project => project.deploy)
+      .map(project => {
+        const resp = falcon.deploy(pr, project);
+        this.websocket.emit('falcon:create', { url: resp.url, payload: resp.payload });
+        return resp;
+      });
   }
 
   setWebsocket(io: SocketIO.Server) {

@@ -1,7 +1,7 @@
 const pe = process.env;
 let githubInfos: any = {};
 
-if (pe.PROJECTS_INFOS){
+if (pe.PROJECTS_INFOS) {
   const { github } = JSON.parse(pe.PROJECTS_INFOS as string);
   githubInfos = github;
 }

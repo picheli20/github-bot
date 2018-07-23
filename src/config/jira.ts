@@ -1,7 +1,7 @@
 const pe = process.env;
 let jiraConfig: IJiraConfig = {};
 
-if (pe.PROJECTS_INFOS){
+if (pe.PROJECTS_INFOS) {
   const { jira } = JSON.parse(pe.PROJECTS_INFOS as string)
   jiraConfig = jira;
 }

@@ -5,7 +5,7 @@ import { git } from '../controller/Git';
 import { bot } from '../controller/Bot';
 import { falcon } from '../controller/Falcon';
 import { Pullrequest } from '../controller/Pullrequest';
-import { IProject } from '../interfaces/projects';
+import { IProject } from '../interfaces/project';
 
 const router = Router();
 
@@ -24,7 +24,7 @@ router.post('/', (req, res) => {
 
   log.unshift(req.body);
 
-  if(log.length > 50) {
+  if (log.length > 50) {
     log.pop();
   }
 
@@ -50,12 +50,14 @@ router.post('/', (req, res) => {
 
       bot.websocket.emit('screenshot:purge', { branch: pr.branch });
       // Loop through each skin and tell Falcon to destroy the environment
-      config.projects.forEach((project: IProject) =>
-        bot.websocket.emit(
-          'falcon:destroy',
-          falcon.destroy(pr, project),
-        ),
-      );
+      config.projects
+        .filter(project => project.deploy)
+        .forEach(project =>
+          bot.websocket.emit(
+            'falcon:destroy',
+            falcon.destroy(pr, project),
+          ),
+        );
       break;
     // new comment
     case 'created':
@@ -71,7 +73,7 @@ router.post('/', (req, res) => {
       break;
     // new commit pushed
     case 'synchronize':
-    res.json({ status: 'Synchronizing' });
+      res.json({ status: 'Synchronizing' });
       falcon.resetAndAddTags(req.body.number, config.status.pending.tag);
       break;
     default:

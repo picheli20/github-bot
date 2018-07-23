@@ -7,59 +7,12 @@
   "slug": "ff-33-login-account-dropdown",
   "owner": "mateuszos",
   "components": {
-    "coreapi": {
-      "deploy": false,
-      "image": null,
-      "tag": null,
-      "branch": null,
-      "config": {
-
-      }
-    },
-    "backoffice2": {
-      "deploy": false,
-      "image": null,
-      "tag": null,
-      "branch": null,
-      "config": {
-
-      }
-    },
-    "backoffice3Api": {
-      "deploy": false,
-      "image": null,
-      "tag": null,
-      "branch": null,
-      "config": {
-
-      }
-    },
-    "backoffice3Portal": {
-      "deploy": false,
-      "image": null,
-      "tag": null,
-      "branch": null,
-      "config": {
-
-      }
-    },
-    "frontapi": {
-      "deploy": false,
-      "image": null,
-      "tag": null,
-      "branch": null,
-      "config": {
-
-      }
-    },
     "xc-r2d2-frankfred": {
       "deploy": true,
       "image": "registry.k8s.xcaliber.io/platform/xcaf/frankfred",
       "tag": null,
       "branch": "FF-33-login-account-dropdown",
-      "config": {
-
-      },
+      "config": {},
       "type": "skin_xcaf"
     }
   },
