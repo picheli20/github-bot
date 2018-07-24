@@ -3,6 +3,7 @@ import { screenshot } from './screenshot';
 import { projects } from './project';
 import { jira } from './jira';
 import { status } from './status';
+import { bot } from './bot';
 import { github } from './github';
 
 export const config = {
@@ -11,5 +12,6 @@ export const config = {
   jira,
   github,
   status,
-  screenshot
+  screenshot,
+  bot,
 };

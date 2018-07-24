@@ -21,7 +21,7 @@ class Bot {
 
     let deployedUrl = {};
 
-    let serverLinks = 'Deployment link(s):\n';
+    let serverLinks = `Deployment: ([re-deploy](${config.bot.url}/pullrequest/deploy/${pr.number}))\n`;
 
     const faconDeploy = this.deployAll(pr);
     const deployments = faconDeploy.map((item: any) => serverLinks += `${item.skin}: ${item.link}\n`);
