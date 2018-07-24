@@ -5,7 +5,7 @@ import pullrequest from './pullrequest';
 const router = express.Router();
 
 router.get('/', (req, res) => {
-  res.json({ status: 'Up and running ' });
+  res.json({ status: 'Up and running' });
 });
 
 router.use('/pullrequest', pullrequest);

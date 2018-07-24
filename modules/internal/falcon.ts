@@ -15,7 +15,7 @@ export const falcon = (socket: SocketIOClient.Emitter) => {
   // { branch: pr.head.ref }
   socket.on('falcon:destroy', async (data: IFalconRequest) => {
     axios.delete(data.url)
-      .then(resp => console.log(`${time()} - [falcon] Branch deleted`))
-      .catch(resp => console.log(`${time()} - [falcon] Error falcon:destroy: ` ));
+      .then(resp => console.log(`${time()} - [falcon] ${data.payload.slug} deleted`))
+      .catch(resp => console.log(`${time()} - [falcon] Error falcon:destroy: ${data.payload.slug}` ));
   });
 }
