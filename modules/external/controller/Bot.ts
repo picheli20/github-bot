@@ -20,7 +20,7 @@ class Bot {
 
     let deployedUrl = {};
 
-    let serverLinks = 'Deployment link(s):\n';
+    let serverLinks = `Deployment: ([re-deploy](${config.bot.url}/pullrequest/deploy/${pr.number}))\n`;
 
     const falconDeploy = this.deployAll(pr);
     falconDeploy.forEach((item: any) => serverLinks += `${item.skin}: ${item.link}\n`);
